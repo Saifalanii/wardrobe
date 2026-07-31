@@ -7,7 +7,10 @@ import { ItemCard } from '@/components/ItemCard'
 export default function Home() {
   const { items, outfits } = useWardrobeData()
 
-  const mostWorn = useMemo(() => [...items].sort((a, b) => b.timesWorn - a.timesWorn)[0], [items])
+  const mostWorn = useMemo(() => {
+    const top = [...items].sort((a, b) => b.timesWorn - a.timesWorn)[0]
+    return top && top.timesWorn > 0 ? top : undefined
+  }, [items])
   const recent = useMemo(() => [...items].sort((a, b) => b.createdAt - a.createdAt).slice(0, 6), [items])
   const favoritesCount = items.filter((i) => i.favorite).length
 

@@ -61,11 +61,15 @@ export default function AddEditItem() {
     setSaving(true)
     setError(null)
     try {
-      const finalImages: ItemImage[] = images.map(({ id: imgId, isPrimary, remoteUrl, remoteId }) => ({
+      // Keep `url` (the resolved local-cache preview) here so the optimistic
+      // store update can render it immediately — itemsService.saveItem strips
+      // it before writing to Firestore, so it's never persisted regardless.
+      const finalImages: ItemImage[] = images.map(({ id: imgId, isPrimary, remoteUrl, remoteId, url }) => ({
         id: imgId,
         isPrimary,
         remoteUrl,
         remoteId,
+        url,
       }))
       const payload: WardrobeItem = { ...form, images: finalImages, updatedAt: Date.now() }
       await upsertItem(uid, payload)
