@@ -243,7 +243,11 @@ export default function OutfitBuilder() {
           <Button type="submit" disabled={saving}>
             {saving ? 'Saving…' : 'Save outfit'}
           </Button>
-          <Button type="button" variant="secondary" onClick={() => navigate(-1)}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => navigate(existing ? `/outfit/${existing.id}` : '/outfits')}
+          >
             Cancel
           </Button>
         </div>

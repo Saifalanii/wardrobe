@@ -55,7 +55,7 @@ export default function OutfitDetail() {
 
   return (
     <div className="space-y-4 py-2">
-      <button onClick={() => navigate(-1)} className="focus-ring inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+      <button onClick={() => navigate('/outfits')} className="focus-ring inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back
       </button>
 

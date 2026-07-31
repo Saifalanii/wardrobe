@@ -227,7 +227,11 @@ export default function AddEditItem() {
           <Button type="submit" disabled={saving}>
             {saving ? 'Saving…' : 'Save item'}
           </Button>
-          <Button type="button" variant="secondary" onClick={() => navigate(-1)}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => navigate(existing ? `/item/${existing.id}` : '/wardrobe')}
+          >
             Cancel
           </Button>
         </div>
