@@ -8,6 +8,7 @@ import { registerSyncListeners, flushQueue } from '@/services/syncService'
 
 const Home = lazy(() => import('@/pages/Home'))
 const Wardrobe = lazy(() => import('@/pages/Wardrobe'))
+const WardrobeGrid = lazy(() => import('@/pages/WardrobeGrid'))
 const ItemDetails = lazy(() => import('@/pages/ItemDetails'))
 const AddEditItem = lazy(() => import('@/pages/AddEditItem'))
 const OutfitBuilder = lazy(() => import('@/pages/OutfitBuilder'))
@@ -63,6 +64,7 @@ function AnimatedRoutes() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/" element={<Protected><Home /></Protected>} />
         <Route path="/wardrobe" element={<Protected><Wardrobe /></Protected>} />
+        <Route path="/wardrobe/all" element={<Protected><WardrobeGrid /></Protected>} />
         <Route path="/item/:id" element={<Protected><ItemDetails /></Protected>} />
         <Route path="/add-item" element={<Protected><AddEditItem /></Protected>} />
         <Route path="/edit-item/:id" element={<Protected><AddEditItem /></Protected>} />

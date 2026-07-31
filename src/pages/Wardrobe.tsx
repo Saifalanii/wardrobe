@@ -1,42 +1,20 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { ChevronRight, LayoutGrid } from 'lucide-react'
 import { useWardrobeData } from '@/hooks/useWardrobeData'
-import { useDebouncedValue } from '@/hooks/useDebouncedValue'
-import { useFilteredItems } from '@/hooks/useFilteredItems'
-import { FilterBar } from '@/components/FilterBar'
-import { VirtualGrid } from '@/components/VirtualGrid'
-import type { ItemFilters, SortOption } from '@/types'
-
-const emptyFilters: ItemFilters = {
-  search: '',
-  categories: [],
-  brands: [],
-  colors: [],
-  seasons: [],
-  favoritesOnly: false,
-}
-
-const sortLabels: Record<SortOption, string> = {
-  newest: 'Newest',
-  oldest: 'Oldest',
-  alphabetical: 'Alphabetical',
-  mostWorn: 'Most worn',
-  leastWorn: 'Least worn',
-}
+import { CategoryIcon } from '@/components/CategoryIcon'
+import { CATEGORIES } from '@/types'
 
 export default function Wardrobe() {
   const { items } = useWardrobeData()
-  const [search, setSearch] = useState('')
-  const [filters, setFilters] = useState<ItemFilters>(emptyFilters)
-  const [sort, setSort] = useState<SortOption>('newest')
-  const [showFilters, setShowFilters] = useState(false)
-  const debouncedSearch = useDebouncedValue(search, 250)
 
-  const activeFilters = useMemo(() => ({ ...filters, search: debouncedSearch }), [filters, debouncedSearch])
-  const filtered = useFilteredItems(items, activeFilters, sort)
-
-  const brands = useMemo(() => Array.from(new Set(items.map((i) => i.brand).filter(Boolean))).sort(), [items])
-  const colors = useMemo(() => Array.from(new Set(items.map((i) => i.color.name).filter(Boolean))).sort(), [items])
+  const counts = useMemo(() => {
+    const map = new Map<string, number>()
+    for (const item of items) {
+      map.set(item.category, (map.get(item.category) ?? 0) + 1)
+    }
+    return map
+  }, [items])
 
   return (
     <div className="space-y-4 py-2">
@@ -47,42 +25,37 @@ export default function Wardrobe() {
         </Link>
       </div>
 
-      <div className="flex gap-2">
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search wardrobe…"
-          aria-label="Search wardrobe"
-          className="focus-ring min-h-[44px] min-w-0 flex-1 rounded-2xl border border-gray-200 bg-white px-4 text-sm dark:border-gray-700 dark:bg-gray-900 py-2"
-        />
-        <select
-          aria-label="Sort items"
-          value={sort}
-          onChange={(e) => setSort(e.target.value as SortOption)}
-          className="focus-ring min-h-[44px] rounded-2xl border border-gray-200 bg-white px-3 text-sm dark:border-gray-700 dark:bg-gray-900 py-2"
+      <div className="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800">
+        <Link
+          to="/wardrobe/all"
+          className="focus-ring flex min-h-[56px] items-center gap-3 border-b border-gray-100 bg-white px-4 py-3 hover:bg-gray-50 active:bg-gray-100 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-gray-800/60 dark:active:bg-gray-800"
         >
-          {Object.entries(sortLabels).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-        <button
-          type="button"
-          className="focus-ring min-h-[44px] rounded-2xl border border-gray-200 px-3 text-sm dark:border-gray-700 py-2"
-          onClick={() => setShowFilters((v) => !v)}
-          aria-expanded={showFilters}
-        >
-          Filters
-        </button>
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-300">
+            <LayoutGrid className="h-4.5 w-4.5" />
+          </span>
+          <span className="flex-1 text-[15px] font-medium">View all</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500">{items.length}</span>
+          <ChevronRight className="h-4 w-4 shrink-0 text-gray-300 dark:text-gray-600" />
+        </Link>
+
+        {CATEGORIES.map((category) => {
+          const count = counts.get(category) ?? 0
+          return (
+            <Link
+              key={category}
+              to={`/wardrobe/all?category=${encodeURIComponent(category)}`}
+              className="focus-ring flex min-h-[56px] items-center gap-3 border-b border-gray-100 bg-white px-4 py-3 last:border-b-0 hover:bg-gray-50 active:bg-gray-100 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-gray-800/60 dark:active:bg-gray-800"
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center text-gray-700 dark:text-gray-300">
+                <CategoryIcon category={category} className="h-6 w-6" />
+              </span>
+              <span className="flex-1 text-[15px]">{category}</span>
+              {count > 0 && <span className="text-xs text-gray-400 dark:text-gray-500">{count}</span>}
+              <ChevronRight className="h-4 w-4 shrink-0 text-gray-300 dark:text-gray-600" />
+            </Link>
+          )
+        })}
       </div>
-
-      {showFilters && <FilterBar filters={filters} onChange={setFilters} brands={brands} colors={colors} />}
-
-      <p className="text-xs text-gray-500 dark:text-gray-400">{filtered.length} items</p>
-
-      <VirtualGrid items={filtered} />
     </div>
   )
 }
