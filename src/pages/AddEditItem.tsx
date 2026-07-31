@@ -168,13 +168,19 @@ export default function AddEditItem() {
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Purchase date" htmlFor="purchaseDate">
-              <input
-                id="purchaseDate"
-                type="date"
-                value={form.purchaseDate ?? ''}
-                onChange={(e) => update('purchaseDate', e.target.value || null)}
-                className="focus-ring min-w-0 min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
-              />
+              {/* iOS Safari's native date input ignores width:100% against a padded
+                  parent and can overflow past it. A wrapper owns the visible box
+                  (border/bg/radius, which sizes correctly); the input is boxless
+                  and just fills the wrapper, so its own quirky sizing is contained. */}
+              <div className="min-h-[44px] w-full max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+                <input
+                  id="purchaseDate"
+                  type="date"
+                  value={form.purchaseDate ?? ''}
+                  onChange={(e) => update('purchaseDate', e.target.value || null)}
+                  className="focus-ring block min-h-[44px] w-full max-w-full appearance-none border-0 bg-transparent px-3 text-inherit"
+                />
+              </div>
             </Field>
             <Field label="Purchase price" htmlFor="purchasePrice">
               <input
