@@ -36,3 +36,19 @@ body {
 .focus-ring {
   @apply outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950;
 }
+
+/* iOS Safari renders a date input's value via an internal pseudo-element
+   with its own intrinsic width that ignores the input's own box, causing
+   it to overflow past the container on narrow screens. Constraining it
+   directly is the standard fix (not reproducible in Chromium/desktop). */
+input[type='date'] {
+  min-width: 0;
+  max-width: 100%;
+}
+input[type='date']::-webkit-date-and-time-value {
+  min-width: 0;
+  text-align: left;
+}
+input[type='date']::-webkit-datetime-edit {
+  min-width: 0;
+}
