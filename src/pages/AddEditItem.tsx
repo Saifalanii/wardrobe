@@ -138,7 +138,7 @@ export default function AddEditItem() {
                 id="size"
                 value={form.size}
                 onChange={(e) => update('size', e.target.value)}
-                className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
+                className="focus-ring min-w-0 min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
               />
             </Field>
             <Field label="Season" htmlFor="season">
@@ -146,7 +146,7 @@ export default function AddEditItem() {
                 id="season"
                 value={form.season}
                 onChange={(e) => update('season', e.target.value as WardrobeItem['season'])}
-                className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
+                className="focus-ring min-w-0 min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
               >
                 {SEASONS.map((s) => (
                   <option key={s} value={s}>

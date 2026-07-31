@@ -55,7 +55,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
             aria-modal="true"
             aria-label={title}
             tabIndex={-1}
-            className="focus-ring max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-soft dark:bg-gray-900 dark:shadow-soft-dark"
+            className="focus-ring modal-panel w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-soft dark:bg-gray-900 dark:shadow-soft-dark"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}

@@ -52,3 +52,15 @@ input[type='date']::-webkit-date-and-time-value {
 input[type='date']::-webkit-datetime-edit {
   min-width: 0;
 }
+
+/* iOS Safari's address bar shows/hides dynamically, so `vh` doesn't match
+   the actual visible viewport there. `dvh` tracks it correctly but isn't
+   universally supported, so it's applied only when @supports confirms it. */
+.modal-panel {
+  max-height: 90vh;
+}
+@supports (max-height: 90dvh) {
+  .modal-panel {
+    max-height: 90dvh;
+  }
+}
