@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect } from 'react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import { AppLayout } from '@/components/AppLayout'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { ToastHost } from '@/components/ToastHost'
 import { registerSyncListeners, flushQueue } from '@/services/syncService'
 
 const Home = lazy(() => import('@/pages/Home'))
@@ -42,6 +43,7 @@ function App() {
 
   return (
     <HashRouter>
+      <ToastHost />
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/login" element={<Login />} />

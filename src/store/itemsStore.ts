@@ -2,6 +2,11 @@ import { create } from 'zustand'
 import type { WardrobeItem } from '@/types'
 import * as itemsService from '@/services/itemsService'
 import { queueIfOffline } from '@/services/syncService'
+import { useToastStore } from '@/store/toastStore'
+
+function toastError(message: string) {
+  useToastStore.getState().push(message, 'error')
+}
 
 interface ItemsState {
   items: WardrobeItem[]
@@ -28,12 +33,14 @@ export const useItemsStore = create<ItemsState>((set, get) => ({
     } catch (err) {
       console.error('fetchItems failed', err)
       set({ loading: false })
+      toastError("Couldn't load your wardrobe. Check your connection and try again.")
     }
   },
 
   upsertItem: async (uid, item) => {
-    const existing = get().items.find((i) => i.id === item.id)
-    const next = existing ? get().items.map((i) => (i.id === item.id ? item : i)) : [item, ...get().items]
+    const previous = get().items
+    const existing = previous.find((i) => i.id === item.id)
+    const next = existing ? previous.map((i) => (i.id === item.id ? item : i)) : [item, ...previous]
     set({ items: next })
 
     const queued = await queueIfOffline({ kind: 'item-upsert', uid, payload: item })
@@ -45,12 +52,15 @@ export const useItemsStore = create<ItemsState>((set, get) => ({
       await itemsService.saveItem(uid, item)
     } catch (err) {
       console.error('saveItem failed', err)
+      set({ items: previous })
+      toastError(`Failed to save "${item.name || 'item'}". Your change was not saved — please try again.`)
     }
   },
 
   removeItem: async (uid, itemId) => {
-    const item = get().items.find((i) => i.id === itemId)
-    set({ items: get().items.filter((i) => i.id !== itemId) })
+    const previous = get().items
+    const item = previous.find((i) => i.id === itemId)
+    set({ items: previous.filter((i) => i.id !== itemId) })
     const images = item?.images.map((img) => ({ id: img.id, remoteId: img.remoteId })) ?? []
 
     const queued = await queueIfOffline({ kind: 'item-delete', uid, payload: { itemId, images } })
@@ -59,30 +69,38 @@ export const useItemsStore = create<ItemsState>((set, get) => ({
       await itemsService.deleteItem(uid, itemId, images)
     } catch (err) {
       console.error('deleteItem failed', err)
+      set({ items: previous })
+      toastError('Failed to delete item. Please try again.')
     }
   },
 
   toggleFavorite: async (uid, itemId) => {
-    const item = get().items.find((i) => i.id === itemId)
+    const previous = get().items
+    const item = previous.find((i) => i.id === itemId)
     if (!item) return
     const favorite = !item.favorite
-    set({ items: get().items.map((i) => (i.id === itemId ? { ...i, favorite } : i)) })
+    set({ items: previous.map((i) => (i.id === itemId ? { ...i, favorite } : i)) })
     try {
       await itemsService.toggleFavoriteItem(uid, itemId, favorite)
     } catch (err) {
       console.error('toggleFavoriteItem failed', err)
+      set({ items: previous })
+      toastError('Failed to update favorite. Please try again.')
     }
   },
 
   incrementWorn: async (uid, itemId) => {
-    const item = get().items.find((i) => i.id === itemId)
+    const previous = get().items
+    const item = previous.find((i) => i.id === itemId)
     if (!item) return
     const timesWorn = item.timesWorn + 1
-    set({ items: get().items.map((i) => (i.id === itemId ? { ...i, timesWorn } : i)) })
+    set({ items: previous.map((i) => (i.id === itemId ? { ...i, timesWorn } : i)) })
     try {
       await itemsService.incrementWearCount(uid, itemId, item.timesWorn)
     } catch (err) {
       console.error('incrementWearCount failed', err)
+      set({ items: previous })
+      toastError('Failed to update wear count. Please try again.')
     }
   },
 

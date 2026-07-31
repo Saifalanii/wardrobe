@@ -2,6 +2,11 @@ import { create } from 'zustand'
 import type { Outfit } from '@/types'
 import * as outfitsService from '@/services/outfitsService'
 import { queueIfOffline } from '@/services/syncService'
+import { useToastStore } from '@/store/toastStore'
+
+function toastError(message: string) {
+  useToastStore.getState().push(message, 'error')
+}
 
 interface OutfitsState {
   outfits: Outfit[]
@@ -27,12 +32,14 @@ export const useOutfitsStore = create<OutfitsState>((set, get) => ({
     } catch (err) {
       console.error('fetchOutfits failed', err)
       set({ loading: false })
+      toastError("Couldn't load your outfits. Check your connection and try again.")
     }
   },
 
   upsertOutfit: async (uid, outfit) => {
-    const existing = get().outfits.find((o) => o.id === outfit.id)
-    const next = existing ? get().outfits.map((o) => (o.id === outfit.id ? outfit : o)) : [outfit, ...get().outfits]
+    const previous = get().outfits
+    const existing = previous.find((o) => o.id === outfit.id)
+    const next = existing ? previous.map((o) => (o.id === outfit.id ? outfit : o)) : [outfit, ...previous]
     set({ outfits: next })
 
     const queued = await queueIfOffline({ kind: 'outfit-upsert', uid, payload: outfit })
@@ -44,29 +51,37 @@ export const useOutfitsStore = create<OutfitsState>((set, get) => ({
       await outfitsService.saveOutfit(uid, outfit)
     } catch (err) {
       console.error('saveOutfit failed', err)
+      set({ outfits: previous })
+      toastError(`Failed to save "${outfit.name || 'outfit'}". Your change was not saved — please try again.`)
     }
   },
 
   removeOutfit: async (uid, outfitId) => {
-    set({ outfits: get().outfits.filter((o) => o.id !== outfitId) })
+    const previous = get().outfits
+    set({ outfits: previous.filter((o) => o.id !== outfitId) })
     const queued = await queueIfOffline({ kind: 'outfit-delete', uid, payload: { outfitId } })
     if (queued) return
     try {
       await outfitsService.deleteOutfit(uid, outfitId)
     } catch (err) {
       console.error('deleteOutfit failed', err)
+      set({ outfits: previous })
+      toastError('Failed to delete outfit. Please try again.')
     }
   },
 
   toggleFavorite: async (uid, outfitId) => {
-    const outfit = get().outfits.find((o) => o.id === outfitId)
+    const previous = get().outfits
+    const outfit = previous.find((o) => o.id === outfitId)
     if (!outfit) return
     const favorite = !outfit.favorite
-    set({ outfits: get().outfits.map((o) => (o.id === outfitId ? { ...o, favorite } : o)) })
+    set({ outfits: previous.map((o) => (o.id === outfitId ? { ...o, favorite } : o)) })
     try {
       await outfitsService.toggleFavoriteOutfit(uid, outfitId, favorite)
     } catch (err) {
       console.error('toggleFavoriteOutfit failed', err)
+      set({ outfits: previous })
+      toastError('Failed to update favorite. Please try again.')
     }
   },
 
