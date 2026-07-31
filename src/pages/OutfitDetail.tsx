@@ -1,0 +1,117 @@
+import { useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useWardrobeData } from '@/hooks/useWardrobeData'
+import { useOutfitsStore } from '@/store/outfitsStore'
+import { Button } from '@/components/Button'
+import { Card } from '@/components/Card'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { generateId } from '@/utils/id'
+
+export default function OutfitDetail() {
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const { outfits, items, uid } = useWardrobeData()
+  const removeOutfit = useOutfitsStore((s) => s.removeOutfit)
+  const toggleFavorite = useOutfitsStore((s) => s.toggleFavorite)
+  const upsertOutfit = useOutfitsStore((s) => s.upsertOutfit)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+
+  const outfit = outfits.find((o) => o.id === id)
+
+  if (!outfit) {
+    return (
+      <div className="py-10 text-center text-gray-500 dark:text-gray-400">
+        <p>Outfit not found.</p>
+        <Link to="/outfits" className="focus-ring text-indigo-600 dark:text-indigo-400">
+          Back to outfits
+        </Link>
+      </div>
+    )
+  }
+
+  const resolvedItems = outfit.itemIds.map((itemId) => items.find((i) => i.id === itemId)).filter(Boolean)
+
+  async function handleDelete() {
+    if (!uid || !outfit) return
+    await removeOutfit(uid, outfit.id)
+    navigate('/outfits')
+  }
+
+  async function handleDuplicate() {
+    if (!uid || !outfit) return
+    const now = Date.now()
+    await upsertOutfit(uid, { ...outfit, id: generateId(), name: `${outfit.name} (Copy)`, createdAt: now, updatedAt: now })
+    navigate('/outfits')
+  }
+
+  return (
+    <div className="space-y-4 py-2">
+      <button onClick={() => navigate(-1)} className="focus-ring text-sm text-gray-500 dark:text-gray-400">
+        ← Back
+      </button>
+
+      <div className="flex items-start justify-between gap-3">
+        <h1 className="text-xl font-bold">{outfit.name}</h1>
+        <button
+          type="button"
+          className="focus-ring text-2xl"
+          aria-pressed={outfit.favorite}
+          aria-label={outfit.favorite ? 'Remove from favorites' : 'Add to favorites'}
+          onClick={() => uid && toggleFavorite(uid, outfit.id)}
+        >
+          {outfit.favorite ? '♥' : '♡'}
+        </button>
+      </div>
+
+      {outfit.tags.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {outfit.tags.map((tag) => (
+            <span key={tag} className="rounded-full bg-indigo-100 px-2 py-1 text-xs text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {resolvedItems.map((item) => {
+          const primary = item!.images.find((im) => im.isPrimary) ?? item!.images[0]
+          return (
+            <Link key={item!.id} to={`/item/${item!.id}`} className="focus-ring block">
+              <Card className="p-0">
+                <div className="aspect-square overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800">
+                  {primary?.url ? (
+                    <img src={primary.url} alt={item!.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-3xl">👕</div>
+                  )}
+                </div>
+                <p className="truncate p-2 text-sm font-medium">{item!.name}</p>
+              </Card>
+            </Link>
+          )
+        })}
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <Link to={`/outfit-builder/${outfit.id}`} className="focus-ring inline-flex min-h-[44px] items-center rounded-2xl bg-gray-100 px-4 text-sm font-medium dark:bg-gray-800">
+          Edit
+        </Link>
+        <Button variant="secondary" onClick={handleDuplicate}>
+          Duplicate
+        </Button>
+        <Button variant="danger" onClick={() => setConfirmOpen(true)}>
+          Delete
+        </Button>
+      </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete outfit"
+        message={`Are you sure you want to delete "${outfit.name}"?`}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmOpen(false)}
+      />
+    </div>
+  )
+}
