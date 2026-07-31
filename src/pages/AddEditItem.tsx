@@ -166,14 +166,14 @@ export default function AddEditItem() {
             />
           </Field>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Purchase date" htmlFor="purchaseDate">
               <input
                 id="purchaseDate"
                 type="date"
                 value={form.purchaseDate ?? ''}
                 onChange={(e) => update('purchaseDate', e.target.value || null)}
-                className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
+                className="focus-ring min-w-0 min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
               />
             </Field>
             <Field label="Purchase price" htmlFor="purchasePrice">
@@ -184,7 +184,7 @@ export default function AddEditItem() {
                 step="0.01"
                 value={form.purchasePrice ?? ''}
                 onChange={(e) => update('purchasePrice', e.target.value ? Number(e.target.value) : null)}
-                className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
+                className="focus-ring min-w-0 min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
               />
             </Field>
           </div>
