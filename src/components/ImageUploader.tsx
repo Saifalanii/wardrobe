@@ -94,7 +94,6 @@ export function ImageUploader({ images, onChange }: ImageUploaderProps) {
             ref={inputRef}
             type="file"
             accept="image/*"
-            capture="environment"
             className="hidden"
             onChange={(e) => handleFiles(e.target.files)}
           />
