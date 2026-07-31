@@ -13,6 +13,14 @@ body,
   height: 100%;
 }
 
+/* Defensive: a single unshrinkable child (native input quirks, long
+   unwrapped content, etc.) can otherwise force the whole page to scroll
+   horizontally instead of just clipping/wrapping that one element. */
+html,
+body {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;

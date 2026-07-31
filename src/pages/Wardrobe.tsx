@@ -54,7 +54,7 @@ export default function Wardrobe() {
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search wardrobe…"
           aria-label="Search wardrobe"
-          className="focus-ring min-h-[44px] flex-1 rounded-2xl border border-gray-200 bg-white px-4 text-sm dark:border-gray-700 dark:bg-gray-900"
+          className="focus-ring min-h-[44px] min-w-0 flex-1 rounded-2xl border border-gray-200 bg-white px-4 text-sm dark:border-gray-700 dark:bg-gray-900"
         />
         <select
           aria-label="Sort items"
