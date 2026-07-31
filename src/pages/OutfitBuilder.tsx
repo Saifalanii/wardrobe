@@ -4,7 +4,8 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Check, Shirt, Sparkles } from 'lucide-react'
 import { useWardrobeData } from '@/hooks/useWardrobeData'
 import { useOutfitsStore } from '@/store/outfitsStore'
-import { OUTFIT_TAGS, type Outfit, type OutfitTag } from '@/types'
+import { useFilteredItems } from '@/hooks/useFilteredItems'
+import { CATEGORIES, OUTFIT_TAGS, type Category, type Outfit, type OutfitTag } from '@/types'
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { Chip } from '@/components/Chip'
@@ -70,9 +71,23 @@ export default function OutfitBuilder() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [celebrate, setCelebrate] = useState(false)
+  const [itemSearch, setItemSearch] = useState('')
+  const [itemCategory, setItemCategory] = useState<Category | 'All'>('All')
 
   const selectedItems = items.filter((i) => form.itemIds.includes(i.id))
   const stackedItems = sortByBodyOrder(selectedItems)
+  const visibleItems = useFilteredItems(
+    items,
+    {
+      search: itemSearch,
+      categories: itemCategory === 'All' ? [] : [itemCategory],
+      brands: [],
+      colors: [],
+      seasons: [],
+      favoritesOnly: false,
+    },
+    'newest',
+  )
 
   function toggleItem(itemId: string) {
     setForm((f) => ({
@@ -191,9 +206,40 @@ export default function OutfitBuilder() {
         </Card>
 
         <div>
-          <p className="mb-2 text-sm font-medium">Select items ({form.itemIds.length} selected)</p>
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">Select items ({form.itemIds.length} selected)</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              {visibleItems.length} of {items.length}
+            </p>
+          </div>
+          <div className="mb-3 flex gap-2">
+            <input
+              type="search"
+              value={itemSearch}
+              onChange={(e) => setItemSearch(e.target.value)}
+              placeholder="Search your items…"
+              aria-label="Search items to add to outfit"
+              className="focus-ring min-h-[44px] min-w-0 flex-1 rounded-2xl border border-gray-200 bg-white px-4 text-sm dark:border-gray-700 dark:bg-gray-900"
+            />
+            <select
+              value={itemCategory}
+              onChange={(e) => setItemCategory(e.target.value as Category | 'All')}
+              aria-label="Filter items by category"
+              className="focus-ring min-h-[44px] rounded-2xl border border-gray-200 bg-white px-3 text-sm dark:border-gray-700 dark:bg-gray-900"
+            >
+              <option value="All">All categories</option>
+              {CATEGORIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+          {visibleItems.length === 0 && (
+            <p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">No items match your search.</p>
+          )}
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
-            {items.map((item) => {
+            {visibleItems.map((item) => {
               const primary = item.images.find((im) => im.isPrimary) ?? item.images[0]
               const selected = form.itemIds.includes(item.id)
               return (
