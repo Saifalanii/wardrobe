@@ -34,15 +34,23 @@ export default function OutfitDetail() {
 
   async function handleDelete() {
     if (!uid || !outfit) return
-    await removeOutfit(uid, outfit.id)
-    navigate('/outfits')
+    try {
+      await removeOutfit(uid, outfit.id)
+      navigate('/outfits')
+    } catch {
+      // Store already reverted the optimistic change and shown an error toast.
+    }
   }
 
   async function handleDuplicate() {
     if (!uid || !outfit) return
     const now = Date.now()
-    await upsertOutfit(uid, { ...outfit, id: generateId(), name: `${outfit.name} (Copy)`, createdAt: now, updatedAt: now })
-    navigate('/outfits')
+    try {
+      await upsertOutfit(uid, { ...outfit, id: generateId(), name: `${outfit.name} (Copy)`, createdAt: now, updatedAt: now })
+      navigate('/outfits')
+    } catch {
+      // Store already reverted the optimistic change and shown an error toast.
+    }
   }
 
   return (
@@ -58,7 +66,7 @@ export default function OutfitDetail() {
           className="focus-ring"
           aria-pressed={outfit.favorite}
           aria-label={outfit.favorite ? 'Remove from favorites' : 'Add to favorites'}
-          onClick={() => uid && toggleFavorite(uid, outfit.id)}
+          onClick={() => uid && toggleFavorite(uid, outfit.id).catch(() => undefined)}
         >
           <Heart className={outfit.favorite ? 'h-6 w-6 fill-red-500 text-red-500' : 'h-6 w-6 text-gray-400'} aria-hidden="true" />
         </button>

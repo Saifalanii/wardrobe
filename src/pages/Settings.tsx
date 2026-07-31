@@ -30,9 +30,15 @@ export default function Settings() {
 
   async function importJson(file: File) {
     if (!user) return
+    let parsed: { items?: WardrobeItem[]; outfits?: Outfit[] }
     try {
       const text = await file.text()
-      const parsed = JSON.parse(text) as { items?: WardrobeItem[]; outfits?: Outfit[] }
+      parsed = JSON.parse(text)
+    } catch {
+      setMessage('Import failed: invalid JSON file.')
+      return
+    }
+    try {
       for (const item of parsed.items ?? []) {
         await upsertItem(user.uid, item)
       }
@@ -41,7 +47,7 @@ export default function Settings() {
       }
       setMessage(`Imported ${parsed.items?.length ?? 0} items and ${parsed.outfits?.length ?? 0} outfits.`)
     } catch {
-      setMessage('Import failed: invalid JSON file.')
+      setMessage('Import failed partway through — some items may not have saved. Check your connection and try again.')
     }
   }
 

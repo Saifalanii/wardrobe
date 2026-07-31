@@ -56,6 +56,8 @@ export default function OutfitBuilder() {
       await upsertOutfit(uid, { ...form, updatedAt: Date.now() })
       useToastStore.getState().push(existing ? 'Outfit updated.' : 'Outfit saved.', 'success')
       navigate(`/outfit/${form.id}`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save outfit')
     } finally {
       setSaving(false)
     }

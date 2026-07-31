@@ -35,15 +35,23 @@ export default function ItemDetails() {
 
   async function handleDelete() {
     if (!uid || !item) return
-    await removeItem(uid, item.id)
-    navigate('/wardrobe')
+    try {
+      await removeItem(uid, item.id)
+      navigate('/wardrobe')
+    } catch {
+      // Store already reverted the optimistic change and shown an error toast.
+    }
   }
 
   async function handleDuplicate() {
     if (!uid || !item) return
     const now = Date.now()
-    await upsertItem(uid, { ...item, id: generateId(), name: `${item.name} (Copy)`, timesWorn: 0, createdAt: now, updatedAt: now })
-    navigate('/wardrobe')
+    try {
+      await upsertItem(uid, { ...item, id: generateId(), name: `${item.name} (Copy)`, timesWorn: 0, createdAt: now, updatedAt: now })
+      navigate('/wardrobe')
+    } catch {
+      // Store already reverted the optimistic change and shown an error toast.
+    }
   }
 
   return (
@@ -66,7 +74,7 @@ export default function ItemDetails() {
           className="focus-ring"
           aria-pressed={item.favorite}
           aria-label={item.favorite ? 'Remove from favorites' : 'Add to favorites'}
-          onClick={() => uid && toggleFavorite(uid, item.id)}
+          onClick={() => uid && toggleFavorite(uid, item.id).catch(() => undefined)}
         >
           <Heart className={item.favorite ? 'h-6 w-6 fill-red-500 text-red-500' : 'h-6 w-6 text-gray-400'} aria-hidden="true" />
         </button>
@@ -95,7 +103,7 @@ export default function ItemDetails() {
       {item.notes && <p className="text-sm text-gray-600 dark:text-gray-300">{item.notes}</p>}
 
       <div className="flex flex-wrap gap-2">
-        <Button onClick={() => uid && incrementWorn(uid, item.id)}>+1 Wear</Button>
+        <Button onClick={() => uid && incrementWorn(uid, item.id).catch(() => undefined)}>+1 Wear</Button>
         <Link to={`/edit-item/${item.id}`} className="focus-ring inline-flex min-h-[44px] items-center rounded-2xl bg-gray-100 px-4 text-sm font-medium dark:bg-gray-800">
           Edit
         </Link>

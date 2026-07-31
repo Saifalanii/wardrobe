@@ -53,6 +53,7 @@ export const useOutfitsStore = create<OutfitsState>((set, get) => ({
       console.error('saveOutfit failed', err)
       set({ outfits: previous })
       toastError(`Failed to save "${outfit.name || 'outfit'}". Your change was not saved — please try again.`)
+      throw err
     }
   },
 
@@ -67,6 +68,7 @@ export const useOutfitsStore = create<OutfitsState>((set, get) => ({
       console.error('deleteOutfit failed', err)
       set({ outfits: previous })
       toastError('Failed to delete outfit. Please try again.')
+      throw err
     }
   },
 
@@ -82,6 +84,7 @@ export const useOutfitsStore = create<OutfitsState>((set, get) => ({
       console.error('toggleFavoriteOutfit failed', err)
       set({ outfits: previous })
       toastError('Failed to update favorite. Please try again.')
+      throw err
     }
   },
 

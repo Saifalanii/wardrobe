@@ -54,6 +54,7 @@ export const useItemsStore = create<ItemsState>((set, get) => ({
       console.error('saveItem failed', err)
       set({ items: previous })
       toastError(`Failed to save "${item.name || 'item'}". Your change was not saved — please try again.`)
+      throw err
     }
   },
 
@@ -71,6 +72,7 @@ export const useItemsStore = create<ItemsState>((set, get) => ({
       console.error('deleteItem failed', err)
       set({ items: previous })
       toastError('Failed to delete item. Please try again.')
+      throw err
     }
   },
 
@@ -86,6 +88,7 @@ export const useItemsStore = create<ItemsState>((set, get) => ({
       console.error('toggleFavoriteItem failed', err)
       set({ items: previous })
       toastError('Failed to update favorite. Please try again.')
+      throw err
     }
   },
 
@@ -101,6 +104,7 @@ export const useItemsStore = create<ItemsState>((set, get) => ({
       console.error('incrementWearCount failed', err)
       set({ items: previous })
       toastError('Failed to update wear count. Please try again.')
+      throw err
     }
   },
 
