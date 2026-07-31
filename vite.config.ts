@@ -32,8 +32,22 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
+        // The background-removal feature is opt-in and its ONNX runtime
+        // (~1.6MB JS + a large WASM binary) should only ever be fetched
+        // on-demand when someone actually uses it — never eagerly
+        // precached for every visitor on install.
+        globIgnores: ['**/ort*.js', '**/ort*.mjs'],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         navigateFallback: '/wardrobe/index.html',
         runtimeCaching: [
+          {
+            urlPattern: /\/ort[^/]*\.(js|mjs|wasm)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'bg-removal-model-cache',
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
+            },
+          },
           {
             urlPattern: ({ request }) => request.destination === 'image',
             handler: 'CacheFirst',

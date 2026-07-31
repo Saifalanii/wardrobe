@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react'
 import Cropper, { type Area } from 'react-easy-crop'
-import { Plus } from 'lucide-react'
+import { Plus, Wand2 } from 'lucide-react'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
-import { compressImage, getCroppedImage } from '@/utils/image'
+import { compressImage, getCroppedImage, removeImageBackground } from '@/utils/image'
 import type { ItemImage } from '@/types'
 import { generateId } from '@/utils/id'
 import { storageProvider } from '@/services/storage'
@@ -24,6 +24,8 @@ export function ImageUploader({ images, onChange }: ImageUploaderProps) {
   const [rotation, setRotation] = useState(0)
   const [croppedArea, setCroppedArea] = useState<Area | null>(null)
   const [pendingFile, setPendingFile] = useState<File | null>(null)
+  const [removeBg, setRemoveBg] = useState(false)
+  const [processing, setProcessing] = useState(false)
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return
@@ -36,14 +38,26 @@ export function ImageUploader({ images, onChange }: ImageUploaderProps) {
 
   async function confirmCrop() {
     if (!cropSrc || !croppedArea) return
-    const blob = await getCroppedImage(cropSrc, croppedArea, rotation)
-    const isPrimary = images.length === 0
-    const id = generateId()
-    const { remoteUrl, remoteId } = await storageProvider.saveImage(id, blob)
-    const url = (await storageProvider.resolveImageUrl(id, remoteUrl)) ?? undefined
-    const next: PendingImage = { id, isPrimary, url, remoteUrl, remoteId }
-    onChange([...images, next])
-    closeCropper()
+    setProcessing(true)
+    try {
+      let blob = await getCroppedImage(cropSrc, croppedArea, rotation)
+      if (removeBg) {
+        try {
+          blob = await removeImageBackground(blob)
+        } catch (err) {
+          console.error('Background removal failed, using original photo', err)
+        }
+      }
+      const isPrimary = images.length === 0
+      const id = generateId()
+      const { remoteUrl, remoteId } = await storageProvider.saveImage(id, blob)
+      const url = (await storageProvider.resolveImageUrl(id, remoteUrl)) ?? undefined
+      const next: PendingImage = { id, isPrimary, url, remoteUrl, remoteId }
+      onChange([...images, next])
+      closeCropper()
+    } finally {
+      setProcessing(false)
+    }
   }
 
   function closeCropper() {
@@ -53,6 +67,7 @@ export function ImageUploader({ images, onChange }: ImageUploaderProps) {
     setZoom(1)
     setRotation(0)
     setCroppedArea(null)
+    setRemoveBg(false)
   }
 
   function removeImage(idx: number) {
@@ -132,15 +147,26 @@ export function ImageUploader({ images, onChange }: ImageUploaderProps) {
                 className="flex-1"
               />
             </div>
+            <label className="mt-3 flex min-h-[44px] cursor-pointer items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={removeBg}
+                onChange={(e) => setRemoveBg(e.target.checked)}
+                className="focus-ring h-5 w-5"
+              />
+              <Wand2 className="h-4 w-4 text-indigo-500" aria-hidden="true" />
+              Remove background
+              <span className="text-xs text-gray-400">(first use downloads a one-time ~40MB model)</span>
+            </label>
             <div className="mt-3 flex justify-end gap-2">
-              <Button variant="ghost" onClick={() => setRotation((r) => (r + 90) % 360)}>
+              <Button variant="ghost" onClick={() => setRotation((r) => (r + 90) % 360)} disabled={processing}>
                 Rotate
               </Button>
-              <Button variant="secondary" onClick={closeCropper}>
+              <Button variant="secondary" onClick={closeCropper} disabled={processing}>
                 Cancel
               </Button>
-              <Button onClick={confirmCrop} disabled={!pendingFile}>
-                Use photo
+              <Button onClick={confirmCrop} disabled={!pendingFile || processing}>
+                {processing ? (removeBg ? 'Removing background…' : 'Saving…') : 'Use photo'}
               </Button>
             </div>
           </div>

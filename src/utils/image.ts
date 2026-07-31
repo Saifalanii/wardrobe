@@ -46,6 +46,17 @@ export async function getCroppedImage(
   })
 }
 
+/**
+ * Cuts the garment out of its background using an on-device ML model
+ * (runs entirely client-side via WASM — no server, no API key). Dynamically
+ * imported so its ~40MB model is only fetched when a user actually opts in,
+ * not on every page load.
+ */
+export async function removeImageBackground(blob: Blob): Promise<Blob> {
+  const { removeBackground } = await import('@imgly/background-removal')
+  return removeBackground(blob)
+}
+
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image()
