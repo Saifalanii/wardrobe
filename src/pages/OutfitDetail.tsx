@@ -6,6 +6,7 @@ import { useOutfitsStore } from '@/store/outfitsStore'
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { OutfitStack } from '@/components/OutfitStack'
 import { generateId } from '@/utils/id'
 import { sortByBodyOrder } from '@/utils/bodyOrder'
 import type { WardrobeItem } from '@/types'
@@ -88,6 +89,9 @@ export default function OutfitDetail() {
         </div>
       )}
 
+      <OutfitStack items={resolvedItems} />
+
+      <p className="text-sm font-medium">Items</p>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {resolvedItems.map((item) => {
           const primary = item.images.find((im) => im.isPrimary) ?? item.images[0]

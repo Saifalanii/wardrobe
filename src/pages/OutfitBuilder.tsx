@@ -156,7 +156,7 @@ export default function OutfitBuilder() {
             </p>
           </div>
           {stackedItems.length > 0 ? (
-            <motion.div layout className="mx-auto flex w-full max-w-[240px] flex-col items-stretch py-1">
+            <motion.div layout className="mx-auto flex w-40 flex-col items-stretch py-1">
               <AnimatePresence>
                 {stackedItems.map((item, i) => {
                   const primary = item.images.find((im) => im.isPrimary) ?? item.images[0]
@@ -168,8 +168,8 @@ export default function OutfitBuilder() {
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.6 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 26 }}
-                      style={{ zIndex: i, marginTop: i === 0 ? 0 : -18 }}
-                      className="relative h-20 w-full overflow-hidden rounded-2xl border-2 border-white bg-gray-100 shadow-md dark:border-gray-950 dark:bg-gray-800"
+                      style={{ zIndex: i, marginTop: i === 0 ? 0 : -56 }}
+                      className="relative aspect-square w-40 shrink-0 overflow-hidden rounded-2xl border-2 border-white bg-gray-100 shadow-md dark:border-gray-950 dark:bg-gray-800"
                     >
                       {primary?.url ? (
                         <img src={primary.url} alt={item.name} className="h-full w-full object-cover" />
