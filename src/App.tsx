@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect } from 'react'
-import { HashRouter, Route, Routes } from 'react-router-dom'
+import { HashRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { AppLayout } from '@/components/AppLayout'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { ToastHost } from '@/components/ToastHost'
@@ -22,16 +23,60 @@ const NotFound = lazy(() => import('@/pages/NotFound'))
 function Loading() {
   return (
     <div className="flex min-h-[50vh] items-center justify-center">
-      <span className="animate-pulse text-sm text-gray-500">Loading…</span>
+      <div className="flex items-center gap-2 text-sm text-gray-500">
+        <span className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-indigo-600 dark:border-gray-700 dark:border-t-indigo-400" />
+        Loading…
+      </div>
     </div>
+  )
+}
+
+function PageTransition({ children }: { children: React.ReactNode }) {
+  const reduceMotion = useReducedMotion()
+  if (reduceMotion) return <>{children}</>
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+    >
+      {children}
+    </motion.div>
   )
 }
 
 function Protected({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
-      <AppLayout>{children}</AppLayout>
+      <AppLayout>
+        <PageTransition>{children}</PageTransition>
+      </AppLayout>
     </ProtectedRoute>
+  )
+}
+
+function AnimatedRoutes() {
+  const location = useLocation()
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/" element={<Protected><Home /></Protected>} />
+        <Route path="/wardrobe" element={<Protected><Wardrobe /></Protected>} />
+        <Route path="/item/:id" element={<Protected><ItemDetails /></Protected>} />
+        <Route path="/add-item" element={<Protected><AddEditItem /></Protected>} />
+        <Route path="/edit-item/:id" element={<Protected><AddEditItem /></Protected>} />
+        <Route path="/outfits" element={<Protected><Outfits /></Protected>} />
+        <Route path="/outfit/:id" element={<Protected><OutfitDetail /></Protected>} />
+        <Route path="/outfit-builder" element={<Protected><OutfitBuilder /></Protected>} />
+        <Route path="/outfit-builder/:id" element={<Protected><OutfitBuilder /></Protected>} />
+        <Route path="/search" element={<Protected><Search /></Protected>} />
+        <Route path="/stats" element={<Protected><Statistics /></Protected>} />
+        <Route path="/settings" element={<Protected><Settings /></Protected>} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AnimatePresence>
   )
 }
 
@@ -45,23 +90,7 @@ function App() {
     <HashRouter>
       <ToastHost />
       <Suspense fallback={<Loading />}>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/" element={<Protected><Home /></Protected>} />
-          <Route path="/wardrobe" element={<Protected><Wardrobe /></Protected>} />
-          <Route path="/item/:id" element={<Protected><ItemDetails /></Protected>} />
-          <Route path="/add-item" element={<Protected><AddEditItem /></Protected>} />
-          <Route path="/edit-item/:id" element={<Protected><AddEditItem /></Protected>} />
-          <Route path="/outfits" element={<Protected><Outfits /></Protected>} />
-          <Route path="/outfit/:id" element={<Protected><OutfitDetail /></Protected>} />
-          <Route path="/outfit-builder" element={<Protected><OutfitBuilder /></Protected>} />
-          <Route path="/outfit-builder/:id" element={<Protected><OutfitBuilder /></Protected>} />
-          <Route path="/search" element={<Protected><Search /></Protected>} />
-          <Route path="/stats" element={<Protected><Statistics /></Protected>} />
-          <Route path="/settings" element={<Protected><Settings /></Protected>} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AnimatedRoutes />
       </Suspense>
     </HashRouter>
   )

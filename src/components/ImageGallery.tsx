@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ChevronLeft, ChevronRight, Shirt } from 'lucide-react'
 import type { ItemImage } from '@/types'
 import { useSwipe } from '@/hooks/useSwipe'
 import { classNames } from '@/utils/format'
@@ -12,8 +13,8 @@ export function ImageGallery({ images }: { images: ItemImage[] }) {
 
   if (images.length === 0) {
     return (
-      <div className="flex aspect-square w-full items-center justify-center rounded-2xl bg-gray-100 text-5xl dark:bg-gray-800">
-        👕
+      <div className="flex aspect-square w-full items-center justify-center rounded-2xl bg-gray-100 text-gray-400 dark:bg-gray-800">
+        <Shirt className="h-16 w-16" aria-hidden="true" />
       </div>
     )
   }
@@ -32,27 +33,29 @@ export function ImageGallery({ images }: { images: ItemImage[] }) {
             style={{ transform: `translateX(${swipe.dragOffset}px)` }}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-5xl">👕</div>
+          <div className="flex h-full w-full items-center justify-center text-gray-400">
+            <Shirt className="h-16 w-16" aria-hidden="true" />
+          </div>
         )}
         {images.length > 1 && (
           <>
             <button
               type="button"
-              className="focus-ring absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/40 px-2 py-1 text-white"
+              className="focus-ring absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-1.5 text-white"
               onClick={() => setIndex((i) => Math.max(i - 1, 0))}
               aria-label="Previous photo"
               disabled={index === 0}
             >
-              ‹
+              <ChevronLeft className="h-5 w-5" aria-hidden="true" />
             </button>
             <button
               type="button"
-              className="focus-ring absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/40 px-2 py-1 text-white"
+              className="focus-ring absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-1.5 text-white"
               onClick={() => setIndex((i) => Math.min(i + 1, images.length - 1))}
               aria-label="Next photo"
               disabled={index === images.length - 1}
             >
-              ›
+              <ChevronRight className="h-5 w-5" aria-hidden="true" />
             </button>
           </>
         )}

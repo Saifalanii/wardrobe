@@ -19,7 +19,7 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
       </label>
       <input
         type="text"
-        className="focus-ring min-h-[44px] flex-1 rounded-2xl border border-gray-200 bg-white px-3 text-sm dark:border-gray-700 dark:bg-gray-900"
+        className="focus-ring min-h-[44px] flex-1 rounded-2xl border border-gray-200 bg-white px-3 text-sm dark:border-gray-700 dark:bg-gray-900 py-2"
         placeholder="Color name (e.g. Navy Blue)"
         value={value.name}
         onChange={(e) => onChange({ ...value, name: e.target.value })}

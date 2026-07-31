@@ -1,11 +1,12 @@
+import { Laptop, Moon, Sun } from 'lucide-react'
 import { useThemeStore } from '@/store/themeStore'
 import type { ThemeMode } from '@/types'
 import { classNames } from '@/utils/format'
 
-const options: { value: ThemeMode; icon: string; label: string }[] = [
-  { value: 'light', icon: '☀️', label: 'Light' },
-  { value: 'dark', icon: '🌙', label: 'Dark' },
-  { value: 'system', icon: '💻', label: 'System' },
+const options: { value: ThemeMode; Icon: typeof Sun; label: string }[] = [
+  { value: 'light', Icon: Sun, label: 'Light' },
+  { value: 'dark', Icon: Moon, label: 'Dark' },
+  { value: 'system', Icon: Laptop, label: 'System' },
 ]
 
 export function ThemeToggle() {
@@ -30,7 +31,7 @@ export function ThemeToggle() {
           aria-label={opt.label}
           title={opt.label}
         >
-          {opt.icon}
+          <opt.Icon className="h-4 w-4" aria-hidden="true" />
         </button>
       ))}
     </div>

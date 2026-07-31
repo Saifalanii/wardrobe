@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { Clock, Heart, Shirt } from 'lucide-react'
 import type { WardrobeItem } from '@/types'
 
 export function ItemCard({ item }: { item: WardrobeItem }) {
@@ -26,16 +27,24 @@ export function ItemCard({ item }: { item: WardrobeItem }) {
               className="h-full w-full object-cover transition-transform group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-3xl">👕</div>
+            <div className="flex h-full w-full items-center justify-center text-gray-400">
+              <Shirt className="h-8 w-8" aria-hidden="true" />
+            </div>
           )}
           {item.favorite && (
-            <span className="absolute right-2 top-2 rounded-full bg-white/90 px-1.5 py-0.5 text-xs dark:bg-gray-900/90" aria-hidden="true">
-              ♥
+            <span
+              className="absolute right-2 top-2 flex items-center justify-center rounded-full bg-white/90 p-1 dark:bg-gray-900/90"
+              aria-hidden="true"
+            >
+              <Heart className="h-3.5 w-3.5 fill-red-500 text-red-500" />
             </span>
           )}
           {item.pendingSync && (
-            <span className="absolute left-2 top-2 rounded-full bg-amber-500/90 px-1.5 py-0.5 text-[10px] font-medium text-white" title="Pending sync">
-              ⏳
+            <span
+              className="absolute left-2 top-2 flex items-center gap-0.5 rounded-full bg-amber-500/90 px-1.5 py-0.5 text-[10px] font-medium text-white"
+              title="Pending sync"
+            >
+              <Clock className="h-3 w-3" aria-hidden="true" />
             </span>
           )}
         </div>

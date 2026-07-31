@@ -1,12 +1,13 @@
 import { NavLink } from 'react-router-dom'
+import { BarChart3, Home as HomeIcon, Layers, Settings as SettingsIcon, Shirt } from 'lucide-react'
 import { classNames } from '@/utils/format'
 
 const links = [
-  { to: '/', label: 'Home', icon: '🏠' },
-  { to: '/wardrobe', label: 'Wardrobe', icon: '👕' },
-  { to: '/outfits', label: 'Outfits', icon: '🧥' },
-  { to: '/stats', label: 'Stats', icon: '📊' },
-  { to: '/settings', label: 'Settings', icon: '⚙️' },
+  { to: '/', label: 'Home', Icon: HomeIcon },
+  { to: '/wardrobe', label: 'Wardrobe', Icon: Shirt },
+  { to: '/outfits', label: 'Outfits', Icon: Layers },
+  { to: '/stats', label: 'Stats', Icon: BarChart3 },
+  { to: '/settings', label: 'Settings', Icon: SettingsIcon },
 ]
 
 export function BottomNav() {
@@ -16,11 +17,11 @@ export function BottomNav() {
       className="fixed inset-x-0 bottom-0 z-40 flex border-t border-gray-200 bg-white/95 backdrop-blur dark:border-gray-800 dark:bg-gray-900/95 md:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      {links.map((link) => (
+      {links.map(({ to, label, Icon }) => (
         <NavLink
-          key={link.to}
-          to={link.to}
-          end={link.to === '/'}
+          key={to}
+          to={to}
+          end={to === '/'}
           className={({ isActive }) =>
             classNames(
               'focus-ring flex min-h-[56px] flex-1 flex-col items-center justify-center gap-0.5 text-xs',
@@ -28,10 +29,8 @@ export function BottomNav() {
             )
           }
         >
-          <span aria-hidden="true" className="text-lg">
-            {link.icon}
-          </span>
-          {link.label}
+          <Icon className="h-5 w-5" aria-hidden="true" />
+          {label}
         </NavLink>
       ))}
     </nav>

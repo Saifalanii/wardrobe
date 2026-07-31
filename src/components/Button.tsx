@@ -1,7 +1,8 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import { motion, type HTMLMotionProps } from 'framer-motion'
 import { classNames } from '@/utils/format'
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends HTMLMotionProps<'button'> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
   children: ReactNode
 }
@@ -16,7 +17,9 @@ const variants: Record<string, string> = {
 
 export function Button({ variant = 'primary', className, children, ...props }: ButtonProps) {
   return (
-    <button
+    <motion.button
+      whileTap={{ scale: 0.96 }}
+      transition={{ duration: 0.15 }}
       className={classNames(
         'focus-ring inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50',
         variants[variant],
@@ -25,6 +28,6 @@ export function Button({ variant = 'primary', className, children, ...props }: B
       {...props}
     >
       {children}
-    </button>
+    </motion.button>
   )
 }

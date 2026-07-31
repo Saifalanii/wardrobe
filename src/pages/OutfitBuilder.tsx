@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { Check, Shirt } from 'lucide-react'
 import { useWardrobeData } from '@/hooks/useWardrobeData'
 import { useOutfitsStore } from '@/store/outfitsStore'
 import { OUTFIT_TAGS, type Outfit, type OutfitTag } from '@/types'
@@ -7,6 +8,7 @@ import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { Chip } from '@/components/Chip'
 import { generateId } from '@/utils/id'
+import { useToastStore } from '@/store/toastStore'
 
 function emptyOutfit(): Outfit {
   const now = Date.now()
@@ -52,6 +54,7 @@ export default function OutfitBuilder() {
     setError(null)
     try {
       await upsertOutfit(uid, { ...form, updatedAt: Date.now() })
+      useToastStore.getState().push(existing ? 'Outfit updated.' : 'Outfit saved.', 'success')
       navigate(`/outfit/${form.id}`)
     } finally {
       setSaving(false)
@@ -73,7 +76,7 @@ export default function OutfitBuilder() {
               required
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
+              className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900 py-2"
             />
           </div>
           <div>
@@ -99,7 +102,9 @@ export default function OutfitBuilder() {
                     {primary?.url ? (
                       <img src={primary.url} alt={item.name} className="h-full w-full object-cover" />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-2xl">👕</div>
+                      <div className="flex h-full w-full items-center justify-center text-gray-400">
+                        <Shirt className="h-8 w-8" aria-hidden="true" />
+                      </div>
                     )}
                   </div>
                 )
@@ -127,9 +132,15 @@ export default function OutfitBuilder() {
                   {primary?.url ? (
                     <img src={primary.url} alt={item.name} className="h-full w-full object-cover" />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gray-100 text-2xl dark:bg-gray-800">👕</div>
+                    <div className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400 dark:bg-gray-800">
+                      <Shirt className="h-8 w-8" aria-hidden="true" />
+                    </div>
                   )}
-                  {selected && <span className="absolute right-1 top-1 rounded-full bg-indigo-600 px-1.5 text-xs text-white">✓</span>}
+                  {selected && (
+                    <span className="absolute right-1 top-1 flex items-center justify-center rounded-full bg-indigo-600 p-0.5 text-white">
+                      <Check className="h-3 w-3" aria-hidden="true" />
+                    </span>
+                  )}
                 </button>
               )
             })}

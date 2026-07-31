@@ -1,3 +1,4 @@
+import { Heart } from 'lucide-react'
 import { CATEGORIES, SEASONS, type ItemFilters } from '@/types'
 import { Chip } from '@/components/Chip'
 
@@ -17,7 +18,7 @@ export function FilterBar({ filters, onChange, brands, colors }: FilterBarProps)
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
         <Chip active={filters.favoritesOnly} onClick={() => onChange({ ...filters, favoritesOnly: !filters.favoritesOnly })}>
-          ♥ Favorites
+          <Heart className="mr-1 inline h-3.5 w-3.5" aria-hidden="true" /> Favorites
         </Chip>
         {SEASONS.map((season) => (
           <Chip

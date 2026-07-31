@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import Cropper, { type Area } from 'react-easy-crop'
+import { Plus } from 'lucide-react'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
 import { compressImage, getCroppedImage } from '@/utils/image'
@@ -88,7 +89,7 @@ export function ImageUploader({ images, onChange }: ImageUploaderProps) {
           </div>
         ))}
         <label className="focus-ring flex aspect-square cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 text-gray-400 hover:border-indigo-400 hover:text-indigo-500 dark:border-gray-700">
-          <span className="text-2xl">+</span>
+          <Plus className="h-6 w-6" aria-hidden="true" />
           <span className="text-xs">Add photo</span>
           <input
             ref={inputRef}

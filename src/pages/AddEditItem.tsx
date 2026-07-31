@@ -9,6 +9,7 @@ import { ImageUploader } from '@/components/ImageUploader'
 import { ColorPicker } from '@/components/ColorPicker'
 import { TagInput } from '@/components/TagInput'
 import { generateId } from '@/utils/id'
+import { useToastStore } from '@/store/toastStore'
 
 function emptyItem(): WardrobeItem {
   const now = Date.now()
@@ -73,6 +74,7 @@ export default function AddEditItem() {
       }))
       const payload: WardrobeItem = { ...form, images: finalImages, updatedAt: Date.now() }
       await upsertItem(uid, payload)
+      useToastStore.getState().push(existing ? 'Item updated.' : 'Item saved.', 'success')
       navigate(`/item/${form.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save item')
@@ -98,7 +100,7 @@ export default function AddEditItem() {
               required
               value={form.name}
               onChange={(e) => update('name', e.target.value)}
-              className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
+              className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
             />
           </Field>
 
@@ -107,7 +109,7 @@ export default function AddEditItem() {
               id="category"
               value={form.category}
               onChange={(e) => update('category', e.target.value as WardrobeItem['category'])}
-              className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
+              className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
             >
               {CATEGORIES.map((c) => (
                 <option key={c} value={c}>
@@ -123,7 +125,7 @@ export default function AddEditItem() {
               list="brand-options"
               value={form.brand}
               onChange={(e) => update('brand', e.target.value)}
-              className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
+              className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
             />
             <datalist id="brand-options">
               {brandOptions.map((b) => (
@@ -142,7 +144,7 @@ export default function AddEditItem() {
                 id="size"
                 value={form.size}
                 onChange={(e) => update('size', e.target.value)}
-                className="focus-ring min-w-0 min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
+                className="focus-ring min-w-0 min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
               />
             </Field>
             <Field label="Season" htmlFor="season">
@@ -150,7 +152,7 @@ export default function AddEditItem() {
                 id="season"
                 value={form.season}
                 onChange={(e) => update('season', e.target.value as WardrobeItem['season'])}
-                className="focus-ring min-w-0 min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
+                className="focus-ring min-w-0 min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
               >
                 {SEASONS.map((s) => (
                   <option key={s} value={s}>
@@ -166,7 +168,7 @@ export default function AddEditItem() {
               id="material"
               value={form.material}
               onChange={(e) => update('material', e.target.value)}
-              className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
+              className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
             />
           </Field>
 
@@ -194,7 +196,7 @@ export default function AddEditItem() {
                 step="0.01"
                 value={form.purchasePrice ?? ''}
                 onChange={(e) => update('purchasePrice', e.target.value ? Number(e.target.value) : null)}
-                className="focus-ring min-w-0 min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 dark:border-gray-700 dark:bg-gray-900"
+                className="focus-ring min-w-0 min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
               />
             </Field>
           </div>

@@ -42,7 +42,7 @@ export default function Wardrobe() {
     <div className="space-y-4 py-2">
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">Wardrobe</h1>
-        <Link to="/add-item" className="focus-ring inline-flex min-h-[44px] items-center rounded-2xl bg-indigo-600 px-4 text-sm font-medium text-white hover:bg-indigo-500">
+        <Link to="/add-item" className="focus-ring inline-flex min-h-[44px] items-center rounded-2xl bg-indigo-600 px-4 text-sm font-medium text-white hover:bg-indigo-500 py-2">
           + Add
         </Link>
       </div>
@@ -54,13 +54,13 @@ export default function Wardrobe() {
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search wardrobe…"
           aria-label="Search wardrobe"
-          className="focus-ring min-h-[44px] min-w-0 flex-1 rounded-2xl border border-gray-200 bg-white px-4 text-sm dark:border-gray-700 dark:bg-gray-900"
+          className="focus-ring min-h-[44px] min-w-0 flex-1 rounded-2xl border border-gray-200 bg-white px-4 text-sm dark:border-gray-700 dark:bg-gray-900 py-2"
         />
         <select
           aria-label="Sort items"
           value={sort}
           onChange={(e) => setSort(e.target.value as SortOption)}
-          className="focus-ring min-h-[44px] rounded-2xl border border-gray-200 bg-white px-3 text-sm dark:border-gray-700 dark:bg-gray-900"
+          className="focus-ring min-h-[44px] rounded-2xl border border-gray-200 bg-white px-3 text-sm dark:border-gray-700 dark:bg-gray-900 py-2"
         >
           {Object.entries(sortLabels).map(([value, label]) => (
             <option key={value} value={value}>
@@ -70,7 +70,7 @@ export default function Wardrobe() {
         </select>
         <button
           type="button"
-          className="focus-ring min-h-[44px] rounded-2xl border border-gray-200 px-3 text-sm dark:border-gray-700"
+          className="focus-ring min-h-[44px] rounded-2xl border border-gray-200 px-3 text-sm dark:border-gray-700 py-2"
           onClick={() => setShowFilters((v) => !v)}
           aria-expanded={showFilters}
         >

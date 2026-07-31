@@ -1,14 +1,16 @@
-import type { ButtonHTMLAttributes } from 'react'
+import { motion, type HTMLMotionProps } from 'framer-motion'
 import { classNames } from '@/utils/format'
 
-interface ChipProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ChipProps extends HTMLMotionProps<'button'> {
   active?: boolean
 }
 
 export function Chip({ active, className, children, ...props }: ChipProps) {
   return (
-    <button
+    <motion.button
       type="button"
+      whileTap={{ scale: 0.96 }}
+      transition={{ duration: 0.15 }}
       aria-pressed={active}
       className={classNames(
         'focus-ring inline-flex min-h-[36px] items-center rounded-full border px-3 py-1 text-sm font-medium transition-colors',
@@ -20,6 +22,6 @@ export function Chip({ active, className, children, ...props }: ChipProps) {
       {...props}
     >
       {children}
-    </button>
+    </motion.button>
   )
 }

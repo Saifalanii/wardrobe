@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useMemo } from 'react'
+import { Flame, Heart, Layers, Shirt, Sparkles } from 'lucide-react'
 import { useWardrobeData } from '@/hooks/useWardrobeData'
 import { StatCard } from '@/components/StatCard'
 import { ItemCard } from '@/components/ItemCard'
@@ -22,11 +23,11 @@ export default function Home() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        <StatCard label="Total Items" value={items.length} icon="👕" />
-        <StatCard label="Favorites" value={favoritesCount} icon="♥" />
-        <StatCard label="Outfits" value={outfits.length} icon="🧥" />
-        <StatCard label="Most Worn" value={mostWorn ? mostWorn.name : '—'} icon="🔥" />
-        <StatCard label="Recently Added" value={recent.length} icon="🆕" />
+        <StatCard label="Total Items" value={items.length} icon={<Shirt className="h-5 w-5" aria-hidden="true" />} />
+        <StatCard label="Favorites" value={favoritesCount} icon={<Heart className="h-5 w-5" aria-hidden="true" />} />
+        <StatCard label="Outfits" value={outfits.length} icon={<Layers className="h-5 w-5" aria-hidden="true" />} />
+        <StatCard label="Most Worn" value={mostWorn ? mostWorn.name : '—'} icon={<Flame className="h-5 w-5" aria-hidden="true" />} />
+        <StatCard label="Recently Added" value={recent.length} icon={<Sparkles className="h-5 w-5" aria-hidden="true" />} />
       </div>
 
       <div className="flex flex-wrap gap-3">

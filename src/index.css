@@ -54,6 +54,18 @@ body {
   @apply outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950;
 }
 
+/* Form controls had no explicit line-height, so WebKit in particular sizes
+   the text box to the font's default (tight) leading and top-aligns the
+   glyphs within it instead of centering them against min-h/py. */
+@layer base {
+  input,
+  select,
+  textarea,
+  button {
+    line-height: 1.5;
+  }
+}
+
 /* iOS Safari renders a date input's value via an internal pseudo-element
    with its own intrinsic width that ignores the input's own box, causing
    it to overflow past the container on narrow screens. Constraining it

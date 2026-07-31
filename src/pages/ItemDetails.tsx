@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
+import { ArrowLeft, Heart } from 'lucide-react'
 import { useWardrobeData } from '@/hooks/useWardrobeData'
 import { useItemsStore } from '@/store/itemsStore'
 import { ImageGallery } from '@/components/ImageGallery'
@@ -47,8 +48,8 @@ export default function ItemDetails() {
 
   return (
     <div className="space-y-4 py-2">
-      <button onClick={() => navigate(-1)} className="focus-ring text-sm text-gray-500 dark:text-gray-400">
-        ← Back
+      <button onClick={() => navigate(-1)} className="focus-ring inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back
       </button>
 
       <ImageGallery images={item.images} />
@@ -62,12 +63,12 @@ export default function ItemDetails() {
         </div>
         <button
           type="button"
-          className="focus-ring text-2xl"
+          className="focus-ring"
           aria-pressed={item.favorite}
           aria-label={item.favorite ? 'Remove from favorites' : 'Add to favorites'}
           onClick={() => uid && toggleFavorite(uid, item.id)}
         >
-          {item.favorite ? '♥' : '♡'}
+          <Heart className={item.favorite ? 'h-6 w-6 fill-red-500 text-red-500' : 'h-6 w-6 text-gray-400'} aria-hidden="true" />
         </button>
       </div>
 

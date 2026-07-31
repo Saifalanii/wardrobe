@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid } from 'recharts'
+import { Heart, Shirt, TrendingUp, Wallet } from 'lucide-react'
 import { useWardrobeData } from '@/hooks/useWardrobeData'
 import { StatCard } from '@/components/StatCard'
 import { Card } from '@/components/Card'
@@ -64,10 +65,10 @@ export default function Statistics() {
       <h1 className="text-2xl font-bold">Statistics</h1>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatCard label="Total Items" value={items.length} icon="👕" />
-        <StatCard label="Total Value" value={formatCurrency(totalValue)} icon="💰" />
-        <StatCard label="Average Cost" value={formatCurrency(avgCost)} icon="📈" />
-        <StatCard label="Favorites" value={items.filter((i) => i.favorite).length} icon="♥" />
+        <StatCard label="Total Items" value={items.length} icon={<Shirt className="h-5 w-5" aria-hidden="true" />} />
+        <StatCard label="Total Value" value={formatCurrency(totalValue)} icon={<Wallet className="h-5 w-5" aria-hidden="true" />} />
+        <StatCard label="Average Cost" value={formatCurrency(avgCost)} icon={<TrendingUp className="h-5 w-5" aria-hidden="true" />} />
+        <StatCard label="Favorites" value={items.filter((i) => i.favorite).length} icon={<Heart className="h-5 w-5" aria-hidden="true" />} />
       </div>
 
       <ChartCard title="Most worn items">

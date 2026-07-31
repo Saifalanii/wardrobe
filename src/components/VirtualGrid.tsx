@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import { PackageOpen } from 'lucide-react'
 import type { WardrobeItem } from '@/types'
 import { ItemCard } from '@/components/ItemCard'
 
@@ -36,9 +37,7 @@ export function VirtualGrid({ items }: { items: WardrobeItem[] }) {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center text-gray-500 dark:text-gray-400">
-        <span className="mb-2 text-4xl" aria-hidden="true">
-          🧺
-        </span>
+        <PackageOpen className="mb-2 h-10 w-10" aria-hidden="true" />
         <p>No items found.</p>
       </div>
     )

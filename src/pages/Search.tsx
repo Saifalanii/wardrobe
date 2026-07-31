@@ -27,7 +27,7 @@ export default function Search() {
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search name, brand, category, color, tags, notes…"
         aria-label="Search your wardrobe"
-        className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-4 text-sm dark:border-gray-700 dark:bg-gray-900"
+        className="focus-ring min-h-[44px] w-full rounded-2xl border border-gray-200 bg-white px-4 text-sm dark:border-gray-700 dark:bg-gray-900 py-2"
       />
       {debounced && <p className="text-xs text-gray-500 dark:text-gray-400">{results.length} results</p>}
       {debounced ? <VirtualGrid items={results} /> : <p className="py-16 text-center text-gray-400">Start typing to search.</p>}

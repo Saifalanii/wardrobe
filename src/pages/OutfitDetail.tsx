@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { ArrowLeft, Heart, Shirt } from 'lucide-react'
 import { useWardrobeData } from '@/hooks/useWardrobeData'
 import { useOutfitsStore } from '@/store/outfitsStore'
 import { Button } from '@/components/Button'
@@ -46,20 +47,20 @@ export default function OutfitDetail() {
 
   return (
     <div className="space-y-4 py-2">
-      <button onClick={() => navigate(-1)} className="focus-ring text-sm text-gray-500 dark:text-gray-400">
-        ← Back
+      <button onClick={() => navigate(-1)} className="focus-ring inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back
       </button>
 
       <div className="flex items-start justify-between gap-3">
         <h1 className="text-xl font-bold">{outfit.name}</h1>
         <button
           type="button"
-          className="focus-ring text-2xl"
+          className="focus-ring"
           aria-pressed={outfit.favorite}
           aria-label={outfit.favorite ? 'Remove from favorites' : 'Add to favorites'}
           onClick={() => uid && toggleFavorite(uid, outfit.id)}
         >
-          {outfit.favorite ? '♥' : '♡'}
+          <Heart className={outfit.favorite ? 'h-6 w-6 fill-red-500 text-red-500' : 'h-6 w-6 text-gray-400'} aria-hidden="true" />
         </button>
       </div>
 
@@ -83,7 +84,9 @@ export default function OutfitDetail() {
                   {primary?.url ? (
                     <img src={primary.url} alt={item!.name} className="h-full w-full object-cover" />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-3xl">👕</div>
+                    <div className="flex h-full w-full items-center justify-center text-gray-400">
+                      <Shirt className="h-8 w-8" aria-hidden="true" />
+                    </div>
                   )}
                 </div>
                 <p className="truncate p-2 text-sm font-medium">{item!.name}</p>
