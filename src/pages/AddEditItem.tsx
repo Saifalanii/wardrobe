@@ -90,7 +90,14 @@ export default function AddEditItem() {
       <form onSubmit={onSubmit} className="space-y-4">
         <Card>
           <p className="mb-2 text-sm font-medium">Photos</p>
-          <ImageUploader images={images} onChange={setImages} />
+          <ImageUploader
+            images={images}
+            onChange={setImages}
+            onColorDetected={(color) => {
+              // Don't clobber a color the user already chose deliberately.
+              if (!form.color.name) update('color', color)
+            }}
+          />
         </Card>
 
         <Card className="space-y-3">

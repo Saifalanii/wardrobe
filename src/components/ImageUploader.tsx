@@ -4,6 +4,7 @@ import { Plus, Wand2 } from 'lucide-react'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
 import { compressImage, getCroppedImage, removeImageBackground } from '@/utils/image'
+import { getDominantColor } from '@/utils/color'
 import type { ItemImage } from '@/types'
 import { generateId } from '@/utils/id'
 import { storageProvider } from '@/services/storage'
@@ -13,10 +14,12 @@ type PendingImage = ItemImage
 interface ImageUploaderProps {
   images: PendingImage[]
   onChange: (images: PendingImage[]) => void
+  /** Called with the photo's estimated dominant color once available (e.g. to prefill the color field). */
+  onColorDetected?: (color: { hex: string; name: string }) => void
 }
 
 /** Multi-image uploader: mobile camera capture, client-side compression, crop/rotate. */
-export function ImageUploader({ images, onChange }: ImageUploaderProps) {
+export function ImageUploader({ images, onChange, onColorDetected }: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [cropSrc, setCropSrc] = useState<string | null>(null)
   const [crop, setCrop] = useState({ x: 0, y: 0 })
@@ -54,6 +57,11 @@ export function ImageUploader({ images, onChange }: ImageUploaderProps) {
       const url = (await storageProvider.resolveImageUrl(id, remoteUrl)) ?? undefined
       const next: PendingImage = { id, isPrimary, url, remoteUrl, remoteId }
       onChange([...images, next])
+      if (isPrimary && onColorDetected) {
+        getDominantColor(blob).then((color) => {
+          if (color) onColorDetected(color)
+        })
+      }
       closeCropper()
     } finally {
       setProcessing(false)
@@ -156,7 +164,6 @@ export function ImageUploader({ images, onChange }: ImageUploaderProps) {
               />
               <Wand2 className="h-4 w-4 text-indigo-500" aria-hidden="true" />
               Remove background
-              <span className="text-xs text-gray-400">(first use downloads a one-time ~40MB model)</span>
             </label>
             <div className="mt-3 flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setRotation((r) => (r + 90) % 360)} disabled={processing}>
@@ -166,7 +173,7 @@ export function ImageUploader({ images, onChange }: ImageUploaderProps) {
                 Cancel
               </Button>
               <Button onClick={confirmCrop} disabled={!pendingFile || processing}>
-                {processing ? (removeBg ? 'Removing background…' : 'Saving…') : 'Use photo'}
+                {processing ? 'Processing…' : 'Use photo'}
               </Button>
             </div>
           </div>

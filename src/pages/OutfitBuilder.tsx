@@ -168,7 +168,7 @@ export default function OutfitBuilder() {
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.6 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 26 }}
-                      style={{ zIndex: i, marginTop: i === 0 ? 0 : -56 }}
+                      style={{ zIndex: i, marginTop: i === 0 ? 0 : -24 }}
                       className="relative aspect-square w-40 shrink-0 overflow-hidden rounded-2xl border-2 border-white bg-gray-100 shadow-md dark:border-gray-950 dark:bg-gray-800"
                     >
                       {primary?.url ? (

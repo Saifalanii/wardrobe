@@ -21,7 +21,7 @@ export function OutfitStack({ items }: { items: WardrobeItem[] }) {
         return (
           <div
             key={item.id}
-            style={{ zIndex: i, marginTop: i === 0 ? 0 : -56 }}
+            style={{ zIndex: i, marginTop: i === 0 ? 0 : -24 }}
             className="relative aspect-square w-40 shrink-0 overflow-hidden rounded-2xl border-2 border-white bg-gray-100 shadow-md dark:border-gray-950 dark:bg-gray-800"
           >
             {primary?.url ? (
