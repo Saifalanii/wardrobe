@@ -15,11 +15,21 @@ function itemsCol(uid: string) {
   return collection(db, 'users', uid, 'items')
 }
 
-/** Strip runtime-only fields (e.g. `url`) so only stable data is persisted. */
+/**
+ * Strip runtime-only fields (e.g. `url`) so only stable data is persisted.
+ * Firestore rejects documents containing a literal `undefined` value, so
+ * `remoteUrl`/`remoteId` (unset until a cloud upload completes) must be
+ * omitted entirely rather than included as `undefined` properties.
+ */
 function toFirestoreImages(
   images: ItemImage[],
 ): { id: string; isPrimary: boolean; remoteUrl?: string; remoteId?: string }[] {
-  return images.map(({ id, isPrimary, remoteUrl, remoteId }) => ({ id, isPrimary, remoteUrl, remoteId }))
+  return images.map(({ id, isPrimary, remoteUrl, remoteId }) => ({
+    id,
+    isPrimary,
+    ...(remoteUrl !== undefined ? { remoteUrl } : {}),
+    ...(remoteId !== undefined ? { remoteId } : {}),
+  }))
 }
 
 export async function fetchItems(uid: string): Promise<WardrobeItem[]> {

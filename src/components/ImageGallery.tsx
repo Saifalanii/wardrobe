@@ -6,7 +6,7 @@ import { classNames } from '@/utils/format'
 
 export function ImageGallery({ images }: { images: ItemImage[] }) {
   const [index, setIndex] = useState(0)
-  const swipe = useSwipe(
+  const { dragOffset, ...swipeHandlers } = useSwipe(
     () => setIndex((i) => Math.min(i + 1, images.length - 1)),
     () => setIndex((i) => Math.max(i - 1, 0)),
   )
@@ -23,14 +23,14 @@ export function ImageGallery({ images }: { images: ItemImage[] }) {
     <div>
       <div
         className="relative aspect-square w-full touch-pan-y select-none overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800"
-        {...swipe}
+        {...swipeHandlers}
       >
         {images[index].url ? (
           <img
             src={images[index].url}
             alt={`Photo ${index + 1} of ${images.length}`}
             className="h-full w-full object-cover"
-            style={{ transform: `translateX(${swipe.dragOffset}px)` }}
+            style={{ transform: `translateX(${dragOffset}px)` }}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-gray-400">
