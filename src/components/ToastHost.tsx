@@ -21,8 +21,14 @@ export function ToastHost() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
+            onClick={() => dismiss(toast.id)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') dismiss(toast.id)
+            }}
             className={classNames(
-              'flex w-full max-w-sm items-center justify-between gap-3 rounded-2xl px-4 py-3 text-sm font-medium shadow-soft dark:shadow-soft-dark',
+              'flex w-full max-w-sm cursor-pointer items-center justify-between gap-3 rounded-2xl px-4 py-3 text-sm font-medium shadow-soft dark:shadow-soft-dark',
               toast.variant === 'error'
                 ? 'bg-red-600 text-white'
                 : toast.variant === 'success'
@@ -34,7 +40,10 @@ export function ToastHost() {
             <button
               type="button"
               className="focus-ring shrink-0 rounded-full px-1 text-white/80 hover:text-white"
-              onClick={() => dismiss(toast.id)}
+              onClick={(e) => {
+                e.stopPropagation()
+                dismiss(toast.id)
+              }}
               aria-label="Dismiss"
             >
               <X className="h-4 w-4" aria-hidden="true" />

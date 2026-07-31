@@ -10,6 +10,7 @@ import { Card } from '@/components/Card'
 import { Chip } from '@/components/Chip'
 import { generateId } from '@/utils/id'
 import { useToastStore } from '@/store/toastStore'
+import { sortByBodyOrder } from '@/utils/bodyOrder'
 
 function emptyOutfit(): Outfit {
   const now = Date.now()
@@ -71,6 +72,7 @@ export default function OutfitBuilder() {
   const [celebrate, setCelebrate] = useState(false)
 
   const selectedItems = items.filter((i) => form.itemIds.includes(i.id))
+  const stackedItems = sortByBodyOrder(selectedItems)
 
   function toggleItem(itemId: string) {
     setForm((f) => ({
@@ -153,20 +155,21 @@ export default function OutfitBuilder() {
               {selectedItems.length > 0 ? 'Your look' : 'Tap items below to start styling'}
             </p>
           </div>
-          {selectedItems.length > 0 ? (
-            <motion.div layout className="flex flex-wrap gap-2">
+          {stackedItems.length > 0 ? (
+            <motion.div layout className="mx-auto flex w-full max-w-[240px] flex-col items-stretch py-1">
               <AnimatePresence>
-                {selectedItems.map((item) => {
+                {stackedItems.map((item, i) => {
                   const primary = item.images.find((im) => im.isPrimary) ?? item.images[0]
                   return (
                     <motion.div
                       key={item.id}
                       layout
-                      initial={{ opacity: 0, scale: 0.6 }}
-                      animate={{ opacity: 1, scale: 1 }}
+                      initial={{ opacity: 0, scale: 0.6, y: -10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.6 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 24 }}
-                      className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl border-2 border-indigo-500 bg-gray-100 shadow-md dark:bg-gray-800"
+                      transition={{ type: 'spring', stiffness: 400, damping: 26 }}
+                      style={{ zIndex: i, marginTop: i === 0 ? 0 : -18 }}
+                      className="relative h-20 w-full overflow-hidden rounded-2xl border-2 border-white bg-gray-100 shadow-md dark:border-gray-950 dark:bg-gray-800"
                     >
                       {primary?.url ? (
                         <img src={primary.url} alt={item.name} className="h-full w-full object-cover" />

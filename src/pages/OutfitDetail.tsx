@@ -7,6 +7,8 @@ import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { generateId } from '@/utils/id'
+import { sortByBodyOrder } from '@/utils/bodyOrder'
+import type { WardrobeItem } from '@/types'
 
 export default function OutfitDetail() {
   const { id } = useParams<{ id: string }>()
@@ -30,7 +32,11 @@ export default function OutfitDetail() {
     )
   }
 
-  const resolvedItems = outfit.itemIds.map((itemId) => items.find((i) => i.id === itemId)).filter(Boolean)
+  const resolvedItems = sortByBodyOrder(
+    outfit.itemIds
+      .map((itemId) => items.find((i) => i.id === itemId))
+      .filter((i): i is WardrobeItem => Boolean(i)),
+  )
 
   async function handleDelete() {
     if (!uid || !outfit) return
@@ -84,20 +90,20 @@ export default function OutfitDetail() {
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {resolvedItems.map((item) => {
-          const primary = item!.images.find((im) => im.isPrimary) ?? item!.images[0]
+          const primary = item.images.find((im) => im.isPrimary) ?? item.images[0]
           return (
-            <Link key={item!.id} to={`/item/${item!.id}`} className="focus-ring block">
+            <Link key={item.id} to={`/item/${item.id}`} className="focus-ring block">
               <Card className="p-0">
                 <div className="aspect-square overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800">
                   {primary?.url ? (
-                    <img src={primary.url} alt={item!.name} className="h-full w-full object-cover" />
+                    <img src={primary.url} alt={item.name} className="h-full w-full object-cover" />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-gray-400">
                       <Shirt className="h-8 w-8" aria-hidden="true" />
                     </div>
                   )}
                 </div>
-                <p className="truncate p-2 text-sm font-medium">{item!.name}</p>
+                <p className="truncate p-2 text-sm font-medium">{item.name}</p>
               </Card>
             </Link>
           )
