@@ -21,6 +21,15 @@ body {
   overflow-x: hidden;
 }
 
+/* iOS Safari has ignored user-scalable=no / maximum-scale in the viewport
+   meta tag since iOS 10 (deliberate, for accessibility). touch-action is
+   the mechanism it still respects for blocking pinch-zoom/double-tap-zoom
+   while leaving normal scroll gestures untouched. */
+html,
+body {
+  touch-action: manipulation;
+}
+
 body {
   margin: 0;
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
