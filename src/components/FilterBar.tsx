@@ -1,6 +1,7 @@
 import { Heart } from 'lucide-react'
 import { CATEGORIES, SEASONS, type ItemFilters } from '@/types'
 import { Chip } from '@/components/Chip'
+import { getCategoryBadgeClass } from '@/utils/categoryColors'
 
 interface FilterBarProps {
   filters: ItemFilters
@@ -31,15 +32,19 @@ export function FilterBar({ filters, onChange, brands, colors }: FilterBarProps)
         ))}
       </div>
       <div className="flex flex-wrap gap-2">
-        {CATEGORIES.map((cat) => (
-          <Chip
-            key={cat}
-            active={filters.categories.includes(cat)}
-            onClick={() => onChange({ ...filters, categories: toggleValue(filters.categories, cat) })}
-          >
-            {cat}
-          </Chip>
-        ))}
+        {CATEGORIES.map((cat) => {
+          const active = filters.categories.includes(cat)
+          return (
+            <Chip
+              key={cat}
+              active={active}
+              onClick={() => onChange({ ...filters, categories: toggleValue(filters.categories, cat) })}
+              className={active ? undefined : getCategoryBadgeClass(cat)}
+            >
+              {cat}
+            </Chip>
+          )
+        })}
       </div>
       {brands.length > 0 && (
         <div className="flex flex-wrap gap-2">

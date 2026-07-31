@@ -37,8 +37,11 @@ export function VirtualGrid({ items }: { items: WardrobeItem[] }) {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center text-gray-500 dark:text-gray-400">
-        <PackageOpen className="mb-2 h-10 w-10" aria-hidden="true" />
-        <p>No items found.</p>
+        <span className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-50 text-indigo-500 dark:bg-indigo-900/40 dark:text-indigo-300">
+          <PackageOpen className="h-8 w-8" aria-hidden="true" />
+        </span>
+        <p className="font-medium text-gray-700 dark:text-gray-300">Nothing here yet</p>
+        <p className="mt-1 text-sm">Try a different filter, or add some clothes to your closet.</p>
       </div>
     )
   }

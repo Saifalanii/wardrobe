@@ -1,12 +1,11 @@
 import { NavLink } from 'react-router-dom'
-import { BarChart3, Home as HomeIcon, Layers, Settings as SettingsIcon, Shirt } from 'lucide-react'
+import { Home as HomeIcon, Layers, Settings as SettingsIcon, Shirt } from 'lucide-react'
 import { classNames } from '@/utils/format'
 
 const links = [
   { to: '/', label: 'Home', Icon: HomeIcon },
   { to: '/wardrobe', label: 'Wardrobe', Icon: Shirt },
   { to: '/outfits', label: 'Outfits', Icon: Layers },
-  { to: '/stats', label: 'Stats', Icon: BarChart3 },
   { to: '/settings', label: 'Settings', Icon: SettingsIcon },
 ]
 

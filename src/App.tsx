@@ -14,7 +14,6 @@ const OutfitBuilder = lazy(() => import('@/pages/OutfitBuilder'))
 const Outfits = lazy(() => import('@/pages/Outfits'))
 const OutfitDetail = lazy(() => import('@/pages/OutfitDetail'))
 const Search = lazy(() => import('@/pages/Search'))
-const Statistics = lazy(() => import('@/pages/Statistics'))
 const Settings = lazy(() => import('@/pages/Settings'))
 const Login = lazy(() => import('@/pages/Login'))
 const Signup = lazy(() => import('@/pages/Signup'))
@@ -72,7 +71,6 @@ function AnimatedRoutes() {
         <Route path="/outfit-builder" element={<Protected><OutfitBuilder /></Protected>} />
         <Route path="/outfit-builder/:id" element={<Protected><OutfitBuilder /></Protected>} />
         <Route path="/search" element={<Protected><Search /></Protected>} />
-        <Route path="/stats" element={<Protected><Statistics /></Protected>} />
         <Route path="/settings" element={<Protected><Settings /></Protected>} />
         <Route path="*" element={<NotFound />} />
       </Routes>

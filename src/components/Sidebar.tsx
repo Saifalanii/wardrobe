@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { BarChart3, Home as HomeIcon, Layers, Search as SearchIcon, Settings as SettingsIcon, Shirt } from 'lucide-react'
+import { Home as HomeIcon, Layers, Search as SearchIcon, Settings as SettingsIcon, Shirt } from 'lucide-react'
 import { classNames } from '@/utils/format'
 import { ThemeToggle } from '@/components/ThemeToggle'
 
@@ -8,7 +8,6 @@ const links = [
   { to: '/wardrobe', label: 'Wardrobe', Icon: Shirt },
   { to: '/outfits', label: 'Outfits', Icon: Layers },
   { to: '/search', label: 'Search', Icon: SearchIcon },
-  { to: '/stats', label: 'Statistics', Icon: BarChart3 },
   { to: '/settings', label: 'Settings', Icon: SettingsIcon },
 ]
 
