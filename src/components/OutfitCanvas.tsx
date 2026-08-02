@@ -104,7 +104,7 @@ export function OutfitCanvas({ items, layout, editable = false, onLayoutChange }
               className={editable ? 'cursor-grab active:cursor-grabbing' : ''}
             >
               <div
-                className={`h-full w-full overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800 ${
+                className={`h-full w-full overflow-hidden rounded-2xl ${
                   isSelected ? 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-gray-100 dark:ring-offset-gray-800' : ''
                 }`}
               >

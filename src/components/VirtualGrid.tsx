@@ -58,6 +58,10 @@ export function VirtualGrid({
   const rowVirtualizer = useVirtualizer({
     count: rowCount,
     getScrollElement: () => parentRef.current,
+    // Only an initial guess for first paint/scrollbar sizing — actual row height (which for
+    // square-aspect tiles depends on the computed column width, not a fixed number) is measured
+    // for real via `measureElement` below. Trusting the estimate alone previously caused rows to
+    // be positioned too close together, making adjacent rows visually overlap.
     estimateSize: () => rowHeight,
     overscan: 4,
   })
@@ -73,6 +77,8 @@ export function VirtualGrid({
           return (
             <div
               key={virtualRow.key}
+              data-index={virtualRow.index}
+              ref={rowVirtualizer.measureElement}
               style={{
                 position: 'absolute',
                 top: 0,
