@@ -1,9 +1,10 @@
-import { Suspense, lazy, useEffect } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { AppLayout } from '@/components/AppLayout'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { ToastHost } from '@/components/ToastHost'
+import { LoadingScreen } from '@/components/LoadingScreen'
 import { registerSyncListeners, flushQueue } from '@/services/syncService'
 
 const Home = lazy(() => import('@/pages/Home'))
@@ -81,6 +82,8 @@ function AnimatedRoutes() {
 }
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true)
+
   useEffect(() => {
     if (navigator.onLine) flushQueue().catch(() => undefined)
     return registerSyncListeners()
@@ -92,6 +95,7 @@ function App() {
       <Suspense fallback={<Loading />}>
         <AnimatedRoutes />
       </Suspense>
+      {showSplash && <LoadingScreen onDone={() => setShowSplash(false)} />}
     </HashRouter>
   )
 }
