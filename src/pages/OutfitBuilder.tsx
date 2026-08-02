@@ -6,11 +6,20 @@ import { Check, Shirt, Sparkles } from 'lucide-react'
 import { useWardrobeData } from '@/hooks/useWardrobeData'
 import { useOutfitsStore } from '@/store/outfitsStore'
 import { useFilteredItems } from '@/hooks/useFilteredItems'
-import { CATEGORIES, OUTFIT_TAGS, type Category, type Outfit, type OutfitItemLayout, type OutfitTag } from '@/types'
+import {
+  CATEGORIES,
+  OUTFIT_TAGS,
+  type Category,
+  type Outfit,
+  type OutfitItemLayout,
+  type OutfitTag,
+  type WardrobeItem,
+} from '@/types'
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { Chip } from '@/components/Chip'
 import { OutfitCanvas } from '@/components/OutfitCanvas'
+import { VirtualGrid } from '@/components/VirtualGrid'
 import { generateId } from '@/utils/id'
 import { defaultLayoutFor } from '@/utils/outfitLayout'
 
@@ -111,6 +120,54 @@ export default function OutfitBuilder() {
 
   function toggleTag(tag: OutfitTag) {
     setForm((f) => ({ ...f, tags: f.tags.includes(tag) ? f.tags.filter((t) => t !== tag) : [...f.tags, tag] }))
+  }
+
+  function renderPickerTile(item: WardrobeItem) {
+    const primary = item.images.find((im) => im.isPrimary) ?? item.images[0]
+    const selected = form.itemIds.includes(item.id)
+    return (
+      <motion.button
+        type="button"
+        onClick={() => toggleItem(item.id)}
+        aria-pressed={selected}
+        whileTap={reduceMotion ? undefined : { scale: 0.94 }}
+        animate={reduceMotion ? undefined : { scale: selected ? 1.03 : 1 }}
+        transition={{ duration: 0.15 }}
+        className={`focus-ring relative aspect-square min-w-0 overflow-hidden rounded-2xl border-2 transition-colors ${
+          selected
+            ? 'border-indigo-600 ring-2 ring-indigo-300 dark:ring-indigo-800'
+            : 'border-transparent hover:border-gray-300 dark:hover:border-gray-700'
+        }`}
+      >
+        {primary?.url ? (
+          <img
+            src={primary.url}
+            alt={item.name}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400 dark:bg-gray-800">
+            <Shirt className="h-8 w-8" aria-hidden="true" />
+          </div>
+        )}
+        <div className={`absolute inset-0 transition-colors ${selected ? 'bg-indigo-600/10' : 'bg-transparent'}`} />
+        <AnimatePresence>
+          {selected && (
+            <motion.span
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+              className="absolute right-1 top-1 flex items-center justify-center rounded-full bg-indigo-600 p-1 text-white shadow"
+            >
+              <Check className="h-3 w-3" aria-hidden="true" />
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </motion.button>
+    )
   }
 
   async function onSubmit(e: FormEvent) {
@@ -223,55 +280,17 @@ export default function OutfitBuilder() {
               ))}
             </select>
           </div>
-          {visibleItems.length === 0 && (
+          {visibleItems.length === 0 ? (
             <p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">No items match your search.</p>
+          ) : (
+            <VirtualGrid
+              items={visibleItems}
+              renderItem={renderPickerTile}
+              columnMinWidth={100}
+              rowHeight={100}
+              className="h-[min(60vh,480px)] overflow-y-auto"
+            />
           )}
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
-            {visibleItems.map((item) => {
-              const primary = item.images.find((im) => im.isPrimary) ?? item.images[0]
-              const selected = form.itemIds.includes(item.id)
-              return (
-                <motion.button
-                  key={item.id}
-                  type="button"
-                  onClick={() => toggleItem(item.id)}
-                  aria-pressed={selected}
-                  whileTap={reduceMotion ? undefined : { scale: 0.94 }}
-                  animate={reduceMotion ? undefined : { scale: selected ? 1.03 : 1 }}
-                  transition={{ duration: 0.15 }}
-                  className={`focus-ring relative aspect-square min-w-0 overflow-hidden rounded-2xl border-2 transition-colors ${
-                    selected
-                      ? 'border-indigo-600 ring-2 ring-indigo-300 dark:ring-indigo-800'
-                      : 'border-transparent hover:border-gray-300 dark:hover:border-gray-700'
-                  }`}
-                >
-                  {primary?.url ? (
-                    <img src={primary.url} alt={item.name} className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400 dark:bg-gray-800">
-                      <Shirt className="h-8 w-8" aria-hidden="true" />
-                    </div>
-                  )}
-                  <div
-                    className={`absolute inset-0 transition-colors ${selected ? 'bg-indigo-600/10' : 'bg-transparent'}`}
-                  />
-                  <AnimatePresence>
-                    {selected && (
-                      <motion.span
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
-                        transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                        className="absolute right-1 top-1 flex items-center justify-center rounded-full bg-indigo-600 p-1 text-white shadow"
-                      >
-                        <Check className="h-3 w-3" aria-hidden="true" />
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </motion.button>
-              )
-            })}
-          </div>
         </div>
 
         {error && <p className="text-sm text-red-600">{error}</p>}
