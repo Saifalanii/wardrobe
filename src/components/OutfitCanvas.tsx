@@ -37,7 +37,7 @@ export function OutfitCanvas({ items, layout, editable = false, onLayoutChange }
 
   const selectedItem = editable ? items.find((item) => item.id === selectedId) : undefined
   const selectedPos = selectedItem
-    ? layout[selectedItem.id] ?? defaultLayoutFor(items.indexOf(selectedItem))
+    ? layout[selectedItem.id] ?? defaultLayoutFor(items.indexOf(selectedItem), items.length)
     : undefined
 
   function startMove(e: React.PointerEvent<HTMLDivElement>, itemId: string, pos: OutfitItemLayout) {
@@ -82,7 +82,7 @@ export function OutfitCanvas({ items, layout, editable = false, onLayoutChange }
         className={`relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800 ${editable ? 'touch-none' : ''}`}
       >
         {items.map((item, i) => {
-          const pos = layout[item.id] ?? defaultLayoutFor(i)
+          const pos = layout[item.id] ?? defaultLayoutFor(i, items.length)
           const primary = item.images.find((im) => im.isPrimary) ?? item.images[0]
           const isFront = frontId === item.id
           const isSelected = selectedId === item.id
@@ -104,7 +104,7 @@ export function OutfitCanvas({ items, layout, editable = false, onLayoutChange }
               className={editable ? 'cursor-grab active:cursor-grabbing' : ''}
             >
               <div
-                className={`h-full w-full overflow-hidden rounded-2xl ${
+                className={`h-full w-full overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800 ${
                   isSelected ? 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-gray-100 dark:ring-offset-gray-800' : ''
                 }`}
               >

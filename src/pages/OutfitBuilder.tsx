@@ -109,7 +109,7 @@ export default function OutfitBuilder() {
         delete layout[itemId]
         return { ...f, itemIds: f.itemIds.filter((i) => i !== itemId), layout }
       }
-      layout[itemId] = defaultLayoutFor(f.itemIds.length)
+      layout[itemId] = defaultLayoutFor(f.itemIds.length, f.itemIds.length + 1)
       return { ...f, itemIds: [...f.itemIds, itemId], layout }
     })
   }
