@@ -26,9 +26,12 @@ function makeParticles(): Particle[] {
 
 interface LoadingScreenProps {
   onDone?: () => void
+  /** Set once the app has real content ready to show (e.g. auth state resolved). Defaults to true. */
+  ready?: boolean
 }
 
-export function LoadingScreen({ onDone }: LoadingScreenProps) {
+export function LoadingScreen({ onDone, ready = true }: LoadingScreenProps) {
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [parallax, setParallax] = useState({ x: 0, y: 0 })
   const particlesRef = useRef(makeParticles())
@@ -40,9 +43,16 @@ export function LoadingScreen({ onDone }: LoadingScreenProps) {
 
   useEffect(() => {
     const delay = reduceMotion ? 600 : 2300
-    const timer = setTimeout(() => setLoaded(true), delay)
+    const timer = setTimeout(() => setMinTimeElapsed(true), delay)
     return () => clearTimeout(timer)
   }, [reduceMotion])
+
+  // Only reveal the app once the choreography has played out AND real content
+  // is actually ready — otherwise dismissing early exposes an in-between
+  // loading state (e.g. the auth-check spinner) for a jarring split second.
+  useEffect(() => {
+    if (minTimeElapsed && ready) setLoaded(true)
+  }, [minTimeElapsed, ready])
 
   useEffect(() => {
     if (!loaded) return
@@ -67,7 +77,7 @@ export function LoadingScreen({ onDone }: LoadingScreenProps) {
   return (
     <div
       className="wl-root fixed inset-0 z-[9999] overflow-hidden"
-      style={{ minHeight: 560 }}
+      style={{ minHeight: 560, backgroundColor: 'var(--wl-bg-1)' }}
     >
       <div
         className="wl-stage absolute inset-0"

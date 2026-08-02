@@ -6,6 +6,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { ToastHost } from '@/components/ToastHost'
 import { LoadingScreen } from '@/components/LoadingScreen'
 import { registerSyncListeners, flushQueue } from '@/services/syncService'
+import { useAuthStore } from '@/store/authStore'
 
 const Home = lazy(() => import('@/pages/Home'))
 const Wardrobe = lazy(() => import('@/pages/Wardrobe'))
@@ -83,6 +84,7 @@ function AnimatedRoutes() {
 
 function App() {
   const [showSplash, setShowSplash] = useState(true)
+  const authInitializing = useAuthStore((s) => s.initializing)
 
   useEffect(() => {
     if (navigator.onLine) flushQueue().catch(() => undefined)
@@ -95,7 +97,9 @@ function App() {
       <Suspense fallback={<Loading />}>
         <AnimatedRoutes />
       </Suspense>
-      {showSplash && <LoadingScreen onDone={() => setShowSplash(false)} />}
+      {showSplash && (
+        <LoadingScreen ready={!authInitializing} onDone={() => setShowSplash(false)} />
+      )}
     </HashRouter>
   )
 }

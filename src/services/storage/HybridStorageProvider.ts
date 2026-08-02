@@ -21,13 +21,19 @@ export class HybridStorageProvider implements StorageProvider {
 
     if (!navigator.onLine) return {}
 
-    try {
-      const { url, remoteId } = await this.cloud.upload(id, blob)
-      return { remoteUrl: url, remoteId }
-    } catch (err) {
-      console.error('Cloud image upload failed (will remain cache-only for now)', err)
-      return {}
+    // The cloud upload is the only thing that survives clearing local site data
+    // (e.g. uninstalling the PWA) — a transient failure here silently leaves the
+    // image cache-only, so retry a couple of times before giving up.
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const { url, remoteId } = await this.cloud.upload(id, blob)
+        return { remoteUrl: url, remoteId }
+      } catch (err) {
+        console.error(`Cloud image upload failed (attempt ${attempt + 1}/3)`, err)
+        if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 800 * (attempt + 1)))
+      }
     }
+    return {}
   }
 
   async resolveImageUrl(id: string, remoteUrl?: string): Promise<string | null> {

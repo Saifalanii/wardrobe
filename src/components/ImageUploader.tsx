@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import Cropper, { type Area } from 'react-easy-crop'
-import { Plus, Wand2 } from 'lucide-react'
+import { Plus, TriangleAlert, Wand2 } from 'lucide-react'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
 import { compressImage, getCroppedImage, removeImageBackground } from '@/utils/image'
@@ -98,6 +98,15 @@ export function ImageUploader({ images, onChange, onColorDetected }: ImageUpload
             <img src={img.url} alt="" className="h-full w-full object-cover" />
             {img.isPrimary && (
               <span className="absolute left-1 top-1 rounded-full bg-indigo-600 px-1.5 py-0.5 text-[10px] text-white">Primary</span>
+            )}
+            {!img.remoteUrl && (
+              <span
+                className="absolute right-1 top-1 flex items-center gap-0.5 rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] text-white"
+                title="Not backed up to the cloud yet — only stored on this device. Uninstalling the app or clearing site data would lose it."
+              >
+                <TriangleAlert className="h-2.5 w-2.5" aria-hidden="true" />
+                Not backed up
+              </span>
             )}
             <div className="absolute inset-x-0 bottom-0 flex justify-between bg-black/50 p-1 opacity-0 transition-opacity group-hover:opacity-100">
               {!img.isPrimary && (
