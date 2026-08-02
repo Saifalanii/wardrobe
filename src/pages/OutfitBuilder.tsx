@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Check, Shirt, Sparkles } from 'lucide-react'
@@ -33,7 +34,11 @@ function ConfettiBurst() {
   })
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center" aria-hidden="true">
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center"
+      style={{ pointerEvents: 'none' }}
+      aria-hidden="true"
+    >
       <div className="relative h-0 w-0">
         {dots.map((dot) => (
           <motion.span
@@ -140,7 +145,10 @@ export default function OutfitBuilder() {
 
   return (
     <div className="space-y-4 py-2">
-      <AnimatePresence>{celebrate && <ConfettiBurst />}</AnimatePresence>
+      {createPortal(
+        <AnimatePresence>{celebrate && <ConfettiBurst />}</AnimatePresence>,
+        document.body,
+      )}
 
       <h1 className="text-2xl font-bold">{existing ? 'Edit outfit' : 'Build outfit'}</h1>
 

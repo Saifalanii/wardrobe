@@ -81,11 +81,15 @@ export interface WardrobeItem {
   pendingSync?: boolean
 }
 
-/** Free-form position of one item's cutout on an outfit's canvas, as percentages of the canvas size. */
+/** Free-form position/transform of one item's cutout on an outfit's canvas. x/y are percentages of the canvas size. */
 export interface OutfitItemLayout {
   x: number
   y: number
   z: number
+  /** Size multiplier relative to the base cutout size. */
+  scale: number
+  /** Rotation in degrees. */
+  rotation: number
 }
 
 export interface Outfit {
