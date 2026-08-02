@@ -81,6 +81,13 @@ export interface WardrobeItem {
   pendingSync?: boolean
 }
 
+/** Free-form position of one item's cutout on an outfit's canvas, as percentages of the canvas size. */
+export interface OutfitItemLayout {
+  x: number
+  y: number
+  z: number
+}
+
 export interface Outfit {
   id: string
   name: string
@@ -90,6 +97,8 @@ export interface Outfit {
   createdAt: number
   updatedAt: number
   pendingSync?: boolean
+  /** Per-item canvas position, keyed by item id. Items without an entry fall back to a default layout. */
+  layout?: Record<string, OutfitItemLayout>
 }
 
 export type SortOption = 'newest' | 'oldest' | 'alphabetical' | 'mostWorn' | 'leastWorn'

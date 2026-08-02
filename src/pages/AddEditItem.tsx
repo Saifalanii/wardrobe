@@ -9,7 +9,6 @@ import { ImageUploader } from '@/components/ImageUploader'
 import { ColorPicker } from '@/components/ColorPicker'
 import { TagInput } from '@/components/TagInput'
 import { generateId } from '@/utils/id'
-import { useToastStore } from '@/store/toastStore'
 
 function emptyItem(): WardrobeItem {
   const now = Date.now()
@@ -74,7 +73,6 @@ export default function AddEditItem() {
       }))
       const payload: WardrobeItem = { ...form, images: finalImages, updatedAt: Date.now() }
       await upsertItem(uid, payload)
-      useToastStore.getState().push(existing ? 'Item updated.' : 'Item saved.', 'success')
       navigate(`/item/${form.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save item')

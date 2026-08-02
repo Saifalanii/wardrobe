@@ -53,7 +53,6 @@ export const useItemsStore = create<ItemsState>((set, get) => ({
     } catch (err) {
       console.error('saveItem failed', err)
       set({ items: previous })
-      toastError(`Failed to save "${item.name || 'item'}". Your change was not saved — please try again.`)
       throw err
     }
   },

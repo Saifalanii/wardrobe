@@ -52,7 +52,6 @@ export const useOutfitsStore = create<OutfitsState>((set, get) => ({
     } catch (err) {
       console.error('saveOutfit failed', err)
       set({ outfits: previous })
-      toastError(`Failed to save "${outfit.name || 'outfit'}". Your change was not saved — please try again.`)
       throw err
     }
   },

@@ -6,9 +6,8 @@ import { useOutfitsStore } from '@/store/outfitsStore'
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
-import { OutfitStack } from '@/components/OutfitStack'
+import { OutfitCanvas } from '@/components/OutfitCanvas'
 import { generateId } from '@/utils/id'
-import { sortByBodyOrder } from '@/utils/bodyOrder'
 import type { WardrobeItem } from '@/types'
 
 export default function OutfitDetail() {
@@ -33,11 +32,9 @@ export default function OutfitDetail() {
     )
   }
 
-  const resolvedItems = sortByBodyOrder(
-    outfit.itemIds
-      .map((itemId) => items.find((i) => i.id === itemId))
-      .filter((i): i is WardrobeItem => Boolean(i)),
-  )
+  const resolvedItems = outfit.itemIds
+    .map((itemId) => items.find((i) => i.id === itemId))
+    .filter((i): i is WardrobeItem => Boolean(i))
 
   async function handleDelete() {
     if (!uid || !outfit) return
@@ -89,7 +86,7 @@ export default function OutfitDetail() {
         </div>
       )}
 
-      <OutfitStack items={resolvedItems} />
+      <OutfitCanvas items={resolvedItems} layout={outfit.layout ?? {}} />
 
       <p className="text-sm font-medium">Items</p>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">

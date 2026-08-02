@@ -5,17 +5,17 @@ import { Check, Shirt, Sparkles } from 'lucide-react'
 import { useWardrobeData } from '@/hooks/useWardrobeData'
 import { useOutfitsStore } from '@/store/outfitsStore'
 import { useFilteredItems } from '@/hooks/useFilteredItems'
-import { CATEGORIES, OUTFIT_TAGS, type Category, type Outfit, type OutfitTag } from '@/types'
+import { CATEGORIES, OUTFIT_TAGS, type Category, type Outfit, type OutfitItemLayout, type OutfitTag } from '@/types'
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { Chip } from '@/components/Chip'
+import { OutfitCanvas } from '@/components/OutfitCanvas'
 import { generateId } from '@/utils/id'
-import { useToastStore } from '@/store/toastStore'
-import { sortByBodyOrder } from '@/utils/bodyOrder'
+import { defaultLayoutFor } from '@/utils/outfitLayout'
 
 function emptyOutfit(): Outfit {
   const now = Date.now()
-  return { id: generateId(), name: '', itemIds: [], tags: [], favorite: false, createdAt: now, updatedAt: now }
+  return { id: generateId(), name: '', itemIds: [], tags: [], favorite: false, createdAt: now, updatedAt: now, layout: {} }
 }
 
 const CONFETTI_COLORS = ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#f43f5e']
@@ -75,7 +75,6 @@ export default function OutfitBuilder() {
   const [itemCategory, setItemCategory] = useState<Category | 'All'>('All')
 
   const selectedItems = items.filter((i) => form.itemIds.includes(i.id))
-  const stackedItems = sortByBodyOrder(selectedItems)
   const visibleItems = useFilteredItems(
     items,
     {
@@ -90,10 +89,19 @@ export default function OutfitBuilder() {
   )
 
   function toggleItem(itemId: string) {
-    setForm((f) => ({
-      ...f,
-      itemIds: f.itemIds.includes(itemId) ? f.itemIds.filter((i) => i !== itemId) : [...f.itemIds, itemId],
-    }))
+    setForm((f) => {
+      const layout = { ...(f.layout ?? {}) }
+      if (f.itemIds.includes(itemId)) {
+        delete layout[itemId]
+        return { ...f, itemIds: f.itemIds.filter((i) => i !== itemId), layout }
+      }
+      layout[itemId] = defaultLayoutFor(f.itemIds.length)
+      return { ...f, itemIds: [...f.itemIds, itemId], layout }
+    })
+  }
+
+  function handleLayoutChange(itemId: string, itemLayout: OutfitItemLayout) {
+    setForm((f) => ({ ...f, layout: { ...(f.layout ?? {}), [itemId]: itemLayout } }))
   }
 
   function toggleTag(tag: OutfitTag) {
@@ -115,7 +123,6 @@ export default function OutfitBuilder() {
     setError(null)
     try {
       await upsertOutfit(uid, { ...form, updatedAt: Date.now() })
-      useToastStore.getState().push(existing ? 'Outfit updated.' : 'Outfit saved.', 'success')
       if (!reduceMotion) {
         setCelebrate(true)
         setTimeout(() => {
@@ -167,42 +174,15 @@ export default function OutfitBuilder() {
           <div className="mb-2 flex items-center gap-1.5">
             <Sparkles className="h-4 w-4 text-indigo-500" aria-hidden="true" />
             <p className="text-sm font-medium">
-              {selectedItems.length > 0 ? 'Your look' : 'Tap items below to start styling'}
+              {selectedItems.length > 0 ? 'Your look — drag items to arrange' : 'Tap items below to start styling'}
             </p>
           </div>
-          {stackedItems.length > 0 ? (
-            <motion.div layout className="mx-auto flex w-40 flex-col items-stretch py-1">
-              <AnimatePresence>
-                {stackedItems.map((item, i) => {
-                  const primary = item.images.find((im) => im.isPrimary) ?? item.images[0]
-                  return (
-                    <motion.div
-                      key={item.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.6, y: -10 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.6 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 26 }}
-                      style={{ zIndex: i, marginTop: i === 0 ? 0 : -24 }}
-                      className="relative aspect-square w-40 shrink-0 overflow-hidden rounded-2xl border-2 border-white bg-gray-100 shadow-md dark:border-gray-950 dark:bg-gray-800"
-                    >
-                      {primary?.url ? (
-                        <img src={primary.url} alt={item.name} className="h-full w-full object-cover" />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-gray-400">
-                          <Shirt className="h-6 w-6" aria-hidden="true" />
-                        </div>
-                      )}
-                    </motion.div>
-                  )
-                })}
-              </AnimatePresence>
-            </motion.div>
-          ) : (
-            <div className="flex h-16 items-center justify-center rounded-2xl border border-dashed border-gray-300 text-xs text-gray-400 dark:border-gray-700">
-              No items selected yet
-            </div>
-          )}
+          <OutfitCanvas
+            items={selectedItems}
+            layout={form.layout ?? {}}
+            editable
+            onLayoutChange={handleLayoutChange}
+          />
         </Card>
 
         <div>
