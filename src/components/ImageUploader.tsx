@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import Cropper, { type Area } from 'react-easy-crop'
-import { Plus, TriangleAlert, Wand2 } from 'lucide-react'
+import { Pencil, Plus, Star, Trash2, TriangleAlert, Wand2 } from 'lucide-react'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
 import { compressImage, getCroppedImage, removeImageBackground } from '@/utils/image'
@@ -26,17 +26,24 @@ export function ImageUploader({ images, onChange, onColorDetected }: ImageUpload
   const [zoom, setZoom] = useState(1)
   const [rotation, setRotation] = useState(0)
   const [croppedArea, setCroppedArea] = useState<Area | null>(null)
-  const [pendingFile, setPendingFile] = useState<File | null>(null)
   const [removeBg, setRemoveBg] = useState(false)
   const [processing, setProcessing] = useState(false)
+  /** Id of the existing image being re-cropped, or null when adding a brand new photo. */
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return
     const file = files[0]
     const compressed = await compressImage(file)
-    setPendingFile(compressed)
     setCropSrc(URL.createObjectURL(compressed))
     if (inputRef.current) inputRef.current.value = ''
+  }
+
+  function startEdit(idx: number) {
+    const img = images[idx]
+    if (!img.url) return
+    setEditingId(img.id)
+    setCropSrc(img.url)
   }
 
   async function confirmCrop() {
@@ -51,16 +58,22 @@ export function ImageUploader({ images, onChange, onColorDetected }: ImageUpload
           console.error('Background removal failed, using original photo', err)
         }
       }
-      const isPrimary = images.length === 0
-      const id = generateId()
-      const { remoteUrl, remoteId } = await storageProvider.saveImage(id, blob)
-      const url = (await storageProvider.resolveImageUrl(id, remoteUrl)) ?? undefined
-      const next: PendingImage = { id, isPrimary, url, remoteUrl, remoteId }
-      onChange([...images, next])
-      if (isPrimary && onColorDetected) {
-        getDominantColor(blob).then((color) => {
-          if (color) onColorDetected(color)
-        })
+      if (editingId) {
+        const { remoteUrl, remoteId } = await storageProvider.saveImage(editingId, blob)
+        const url = (await storageProvider.resolveImageUrl(editingId, remoteUrl)) ?? undefined
+        onChange(images.map((img) => (img.id === editingId ? { ...img, url, remoteUrl, remoteId } : img)))
+      } else {
+        const isPrimary = images.length === 0
+        const id = generateId()
+        const { remoteUrl, remoteId } = await storageProvider.saveImage(id, blob)
+        const url = (await storageProvider.resolveImageUrl(id, remoteUrl)) ?? undefined
+        const next: PendingImage = { id, isPrimary, url, remoteUrl, remoteId }
+        onChange([...images, next])
+        if (isPrimary && onColorDetected) {
+          getDominantColor(blob).then((color) => {
+            if (color) onColorDetected(color)
+          })
+        }
       }
       closeCropper()
     } finally {
@@ -70,7 +83,7 @@ export function ImageUploader({ images, onChange, onColorDetected }: ImageUpload
 
   function closeCropper() {
     setCropSrc(null)
-    setPendingFile(null)
+    setEditingId(null)
     setCrop({ x: 0, y: 0 })
     setZoom(1)
     setRotation(0)
@@ -94,7 +107,7 @@ export function ImageUploader({ images, onChange, onColorDetected }: ImageUpload
     <div>
       <div className="mb-3 grid grid-cols-3 gap-2 sm:grid-cols-4">
         {images.map((img, idx) => (
-          <div key={img.id} className="group relative aspect-square overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700">
+          <div key={img.id} className="relative aspect-square overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700">
             <img src={img.url} alt="" className="h-full w-full object-cover" />
             {img.isPrimary && (
               <span className="absolute left-1 top-1 rounded-full bg-indigo-600 px-1.5 py-0.5 text-[10px] text-white">Primary</span>
@@ -108,14 +121,35 @@ export function ImageUploader({ images, onChange, onColorDetected }: ImageUpload
                 Not backed up
               </span>
             )}
-            <div className="absolute inset-x-0 bottom-0 flex justify-between bg-black/50 p-1 opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-1 bg-black/55 p-1">
+              <button
+                type="button"
+                className="focus-ring rounded-full p-1 text-white"
+                onClick={() => startEdit(idx)}
+                aria-label="Edit photo"
+                title="Edit photo"
+              >
+                <Pencil className="h-3 w-3" aria-hidden="true" />
+              </button>
               {!img.isPrimary && (
-                <button type="button" className="focus-ring text-[10px] text-white" onClick={() => setPrimary(idx)}>
-                  Set primary
+                <button
+                  type="button"
+                  className="focus-ring rounded-full p-1 text-white"
+                  onClick={() => setPrimary(idx)}
+                  aria-label="Set as primary photo"
+                  title="Set as primary photo"
+                >
+                  <Star className="h-3 w-3" aria-hidden="true" />
                 </button>
               )}
-              <button type="button" className="focus-ring ml-auto text-[10px] text-white" onClick={() => removeImage(idx)} aria-label="Remove image">
-                Remove
+              <button
+                type="button"
+                className="focus-ring ml-auto rounded-full p-1 text-white"
+                onClick={() => removeImage(idx)}
+                aria-label="Remove photo"
+                title="Remove photo"
+              >
+                <Trash2 className="h-3 w-3" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -133,7 +167,7 @@ export function ImageUploader({ images, onChange, onColorDetected }: ImageUpload
         </label>
       </div>
 
-      <Modal open={!!cropSrc} onClose={closeCropper} title="Adjust photo">
+      <Modal open={!!cropSrc} onClose={closeCropper} title={editingId ? 'Edit photo' : 'Adjust photo'}>
         {cropSrc && (
           <div>
             <div className="relative h-64 w-full overflow-hidden rounded-2xl bg-gray-900">
@@ -181,7 +215,7 @@ export function ImageUploader({ images, onChange, onColorDetected }: ImageUpload
               <Button variant="secondary" onClick={closeCropper} disabled={processing}>
                 Cancel
               </Button>
-              <Button onClick={confirmCrop} disabled={!pendingFile || processing}>
+              <Button onClick={confirmCrop} disabled={processing}>
                 {processing ? 'Processing…' : 'Use photo'}
               </Button>
             </div>
